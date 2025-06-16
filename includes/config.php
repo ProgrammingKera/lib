@@ -46,20 +46,16 @@ if ($conn->query($sql) !== TRUE) {
 $sql = "ALTER TABLE users ADD COLUMN IF NOT EXISTS unique_id VARCHAR(20) UNIQUE AFTER id";
 $conn->query($sql);
 
-// Create Books table
+// Create Books table with updated structure
 $sql = "CREATE TABLE IF NOT EXISTS books (
     id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     author VARCHAR(100) NOT NULL,
-    isbn VARCHAR(20) UNIQUE,
+    book_no VARCHAR(50) UNIQUE,
     publisher VARCHAR(100),
-    publication_year INT(4),
     category VARCHAR(50),
     available_quantity INT(11) NOT NULL DEFAULT 0,
     total_quantity INT(11) NOT NULL DEFAULT 0,
-    shelf_location VARCHAR(50),
-    description TEXT,
-    cover_image VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 )";

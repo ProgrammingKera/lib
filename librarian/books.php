@@ -13,67 +13,41 @@ $messageType = '';
 if (isset($_POST['add_book'])) {
     $title = trim($_POST['title']);
     $author = trim($_POST['author']);
-    $isbn = trim($_POST['isbn']);
+    $book_no = trim($_POST['book_no']);
     $publisher = trim($_POST['publisher']);
-    $year = trim($_POST['year']);
     $category = trim($_POST['category']);
     $quantity = (int)$_POST['quantity'];
-    $shelf = trim($_POST['shelf']);
-    $description = trim($_POST['description']);
     
     // Basic validation
     if (empty($title) || empty($author) || empty($quantity)) {
         $message = "Title, author, and quantity are required fields.";
         $messageType = "danger";
     } else {
-        // Check if ISBN already exists
-        if (!empty($isbn)) {
-            $stmt = $conn->prepare("SELECT id FROM books WHERE isbn = ?");
-            $stmt->bind_param("s", $isbn);
+        // Check if book_no already exists
+        if (!empty($book_no)) {
+            $stmt = $conn->prepare("SELECT id FROM books WHERE book_no = ?");
+            $stmt->bind_param("s", $book_no);
             $stmt->execute();
             $result = $stmt->get_result();
             
             if ($result->num_rows > 0) {
-                $message = "A book with this ISBN already exists.";
+                $message = "A book with this book number already exists.";
                 $messageType = "danger";
             }
         }
         
         if (empty($message)) {
-            // Process cover image if uploaded
-            $coverImage = "";
-            if (isset($_FILES['cover']) && $_FILES['cover']['error'] == 0) {
-                $allowed = array('jpg', 'jpeg', 'png', 'gif');
-                $filename = $_FILES['cover']['name'];
-                $ext = pathinfo($filename, PATHINFO_EXTENSION);
-                
-                if (in_array(strtolower($ext), $allowed)) {
-                    $newFilename = uniqid() . '.' . $ext;
-                    $uploadDir = '../uploads/covers/';
-                    
-                    if (!file_exists($uploadDir)) {
-                        mkdir($uploadDir, 0777, true);
-                    }
-                    
-                    $uploadFile = $uploadDir . $newFilename;
-                    
-                    if (move_uploaded_file($_FILES['cover']['tmp_name'], $uploadFile)) {
-                        $coverImage = $uploadFile;
-                    }
-                }
-            }
-            
             // Insert book
             $stmt = $conn->prepare("
-                INSERT INTO books (title, author, isbn, publisher, publication_year, category, 
-                                  total_quantity, available_quantity, shelf_location, description, cover_image)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO books (title, author, book_no, publisher, category, 
+                                  total_quantity, available_quantity)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
             ");
             
             $stmt->bind_param(
-                "ssssissssss",
-                $title, $author, $isbn, $publisher, $year, $category,
-                $quantity, $quantity, $shelf, $description, $coverImage
+                "sssssii",
+                $title, $author, $book_no, $publisher, $category,
+                $quantity, $quantity
             );
             
             if ($stmt->execute()) {
@@ -137,7 +111,7 @@ $params = [];
 $types = "";
 
 if (!empty($search)) {
-    $sql .= " AND (title LIKE ? OR author LIKE ? OR isbn LIKE ?)";
+    $sql .= " AND (title LIKE ? OR author LIKE ? OR book_no LIKE ?)";
     $searchParam = "%$search%";
     $params[] = $searchParam;
     $params[] = $searchParam;
@@ -217,17 +191,14 @@ while ($row = $result->fetch_assoc()) {
         <?php foreach ($books as $book): ?>
             <div class="book-card" data-category="<?php echo htmlspecialchars($book['category']); ?>">
                 <div class="book-cover">
-                    <?php if (!empty($book['cover_image'])): ?>
-                        <img src="<?php echo htmlspecialchars($book['cover_image']); ?>" alt="<?php echo htmlspecialchars($book['title']); ?>">
-                    <?php else: ?>
-                        <i class="fas fa-book fa-3x"></i>
-                    <?php endif; ?>
+                    <i class="fas fa-book fa-3x"></i>
                 </div>
                 <div class="book-info">
                     <h3 class="book-title"><?php echo htmlspecialchars($book['title']); ?></h3>
                     <p class="book-author">By <?php echo htmlspecialchars($book['author']); ?></p>
                     <div class="book-details">
                         <span><?php echo htmlspecialchars($book['category']); ?></span>
+                        <span>Book No: <?php echo htmlspecialchars($book['book_no']); ?></span>
                         <span>
                             <?php echo $book['available_quantity']; ?> / <?php echo $book['total_quantity']; ?> available
                         </span>
@@ -257,7 +228,7 @@ while ($row = $result->fetch_assoc()) {
             <button class="modal-close">&times;</button>
         </div>
         <div class="modal-body">
-            <form action="" method="POST" enctype="multipart/form-data">
+            <form action="" method="POST">
                 <div class="form-row">
                     <div class="form-col">
                         <div class="form-group">
@@ -276,8 +247,8 @@ while ($row = $result->fetch_assoc()) {
                 <div class="form-row">
                     <div class="form-col">
                         <div class="form-group">
-                            <label for="isbn">ISBN</label>
-                            <input type="text" id="isbn" name="isbn" class="form-control">
+                            <label for="book_no">Book Number</label>
+                            <input type="text" id="book_no" name="book_no" class="form-control">
                         </div>
                     </div>
                     <div class="form-col">
@@ -291,12 +262,6 @@ while ($row = $result->fetch_assoc()) {
                 <div class="form-row">
                     <div class="form-col">
                         <div class="form-group">
-                            <label for="year">Publication Year</label>
-                            <input type="number" id="year" name="year" class="form-control" min="1800" max="<?php echo date('Y'); ?>">
-                        </div>
-                    </div>
-                    <div class="form-col">
-                        <div class="form-group">
                             <label for="category">Category</label>
                             <input type="text" id="category" name="category" class="form-control" list="categories">
                             <datalist id="categories">
@@ -306,32 +271,12 @@ while ($row = $result->fetch_assoc()) {
                             </datalist>
                         </div>
                     </div>
-                </div>
-                
-                <div class="form-row">
                     <div class="form-col">
                         <div class="form-group">
                             <label for="quantity">Quantity <span class="text-danger">*</span></label>
                             <input type="number" id="quantity" name="quantity" class="form-control" min="1" value="1" required>
                         </div>
                     </div>
-                    <div class="form-col">
-                        <div class="form-group">
-                            <label for="shelf">Shelf Location</label>
-                            <input type="text" id="shelf" name="shelf" class="form-control">
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="description">Description</label>
-                    <textarea id="description" name="description" class="form-control" rows="4"></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label for="cover">Cover Image</label>
-                    <input type="file" id="cover" name="cover" class="form-control" accept="image/*">
-                    <small class="text-muted">Supported formats: JPG, PNG, GIF. Max size: 2MB</small>
                 </div>
                 
                 <div class="form-group text-right">

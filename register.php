@@ -123,7 +123,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <div class="auth-container large">
             <div class="auth-header">
                 <h1>
-                    <i class="fas fa-user-plus"></i>
+                    
                     Create Account
                 </h1>
                 
@@ -160,7 +160,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <div class="form-col">
                             <div class="form-group">
                                 <label for="name">
-                                    <i class="fas fa-user"></i> 
+                                    
                                     Full Name *
                                 </label>
                                 <input type="text" id="name" name="name" placeholder="Enter your full name" required>
@@ -169,7 +169,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <div class="form-col">
                             <div class="form-group">
                                 <label for="email">
-                                    <i class="fas fa-envelope"></i> 
+                                     
                                     Email Address *
                                 </label>
                                 <input type="email" id="email" name="email" placeholder="Enter your email" required>
@@ -179,7 +179,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                     <div class="form-group">
                         <label for="role">
-                            <i class="fas fa-user-tag"></i> 
+                            
                             Role *
                         </label>
                         <select id="role" name="role" required>
@@ -193,7 +193,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <div class="form-col">
                             <div class="form-group">
                                 <label for="password">
-                                    <i class="fas fa-lock"></i> 
+                                    
                                     Password *
                                 </label>
                                 <input type="password" id="password" name="password" placeholder="Create a strong password" required>
@@ -217,7 +217,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <div class="form-col">
                             <div class="form-group">
                                 <label for="confirm_password">
-                                    <i class="fas fa-lock"></i> 
+                                     
                                     Confirm Password *
                                 </label>
                                 <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm your password" required>
@@ -229,25 +229,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <div class="form-col">
                             <div class="form-group">
                                 <label for="department">
-                                    <i class="fas fa-building"></i> 
+                                     
                                     Department
                                 </label>
-                                <input type="text" id="department" name="department" placeholder="Your department (optional)">
+                                <input type="text" id="department" name="department" placeholder="Your department ">
                             </div>
                         </div>
                         <div class="form-col">
                             <div class="form-group">
                                 <label for="phone">
-                                    <i class="fas fa-phone"></i> 
+                                     
                                     Phone Number
                                 </label>
-                                <input type="tel" id="phone" name="phone" placeholder="03123456789 (optional)">
+                                <input type="tel" id="phone" name="phone" placeholder="03123456789 ">
                             </div>
                         </div>
                     </div>
                     
                     <button type="submit" class="btn-auth" id="submitBtn" disabled>
-                        <i class="fas fa-user-plus"></i> 
+                         
                         Create Account
                     </button>
                     
@@ -262,7 +262,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
             
             <div class="auth-footer">
-                <p>&copy; 2025 Library Management System. All rights reserved.</p>
+                <p>&copy; 2025 Book Bridge. All rights reserved.</p>
             </div>
         </div>
     </div>

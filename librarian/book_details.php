@@ -45,56 +45,24 @@ $issueHistory = $stmt->get_result();
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_book'])) {
     $title = trim($_POST['title']);
     $author = trim($_POST['author']);
-    $isbn = trim($_POST['isbn']);
+    $book_no = trim($_POST['book_no']);
     $publisher = trim($_POST['publisher']);
-    $year = trim($_POST['year']);
     $category = trim($_POST['category']);
     $quantity = (int)$_POST['quantity'];
-    $shelf = trim($_POST['shelf']);
-    $description = trim($_POST['description']);
-    
-    // Handle cover image upload
-    $coverImage = $book['cover_image']; // Keep existing image by default
-    
-    if (isset($_FILES['cover']) && $_FILES['cover']['error'] == 0) {
-        $allowed = array('jpg', 'jpeg', 'png', 'gif');
-        $filename = $_FILES['cover']['name'];
-        $ext = pathinfo($filename, PATHINFO_EXTENSION);
-        
-        if (in_array(strtolower($ext), $allowed)) {
-            $newFilename = uniqid() . '.' . $ext;
-            $uploadDir = '../uploads/covers/';
-            
-            if (!file_exists($uploadDir)) {
-                mkdir($uploadDir, 0777, true);
-            }
-            
-            $uploadFile = $uploadDir . $newFilename;
-            
-            if (move_uploaded_file($_FILES['cover']['tmp_name'], $uploadFile)) {
-                // Delete old cover image if it exists
-                if (!empty($book['cover_image']) && file_exists($book['cover_image'])) {
-                    unlink($book['cover_image']);
-                }
-                $coverImage = $uploadFile;
-            }
-        }
-    }
     
     // Update book
     $stmt = $conn->prepare("
         UPDATE books 
-        SET title = ?, author = ?, isbn = ?, publisher = ?, 
-            publication_year = ?, category = ?, total_quantity = ?,
-            shelf_location = ?, description = ?, cover_image = ?
+        SET title = ?, author = ?, book_no = ?, publisher = ?, 
+            category = ?, total_quantity = ?
         WHERE id = ?
     ");
     
     $stmt->bind_param(
-    "sssssissssi",
-    $title, $author, $isbn, $publisher, $year, 
-    $category, $quantity, $shelf, $description, $coverImage, $bookId
-);
+        "sssssii",
+        $title, $author, $book_no, $publisher, 
+        $category, $quantity, $bookId
+    );
     
     if ($stmt->execute()) {
         $message = "Book updated successfully.";
@@ -137,13 +105,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_book'])) {
 <div class="book-details-container">
     <div class="book-info-card">
         <div class="book-cover">
-            <?php if (!empty($book['cover_image'])): ?>
-                <img src="<?php echo htmlspecialchars($book['cover_image']); ?>" alt="<?php echo htmlspecialchars($book['title']); ?>">
-            <?php else: ?>
-                <div class="no-cover">
-                    <i class="fas fa-book fa-4x"></i>
-                </div>
-            <?php endif; ?>
+            <div class="no-cover">
+                <i class="fas fa-book fa-4x"></i>
+            </div>
         </div>
         
         <div class="book-stats">
@@ -167,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_book'])) {
     </div>
     
     <div class="book-details-form">
-        <form action="" method="POST" enctype="multipart/form-data">
+        <form action="" method="POST">
             <div class="form-row">
                 <div class="form-col">
                     <div class="form-group">
@@ -186,8 +150,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_book'])) {
             <div class="form-row">
                 <div class="form-col">
                     <div class="form-group">
-                        <label for="isbn">ISBN</label>
-                        <input type="text" id="isbn" name="isbn" value="<?php echo htmlspecialchars($book['isbn']); ?>">
+                        <label for="book_no">Book Number</label>
+                        <input type="text" id="book_no" name="book_no" value="<?php echo htmlspecialchars($book['book_no']); ?>">
                     </div>
                 </div>
                 <div class="form-col">
@@ -201,48 +165,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_book'])) {
             <div class="form-row">
                 <div class="form-col">
                     <div class="form-group">
-                        <label for="year">Publication Year</label>
-                        <input type="number" id="year" name="year" value="<?php echo $book['publication_year']; ?>">
-                    </div>
-                </div>
-                <div class="form-col">
-                    <div class="form-group">
                         <label for="category">Category</label>
                         <input type="text" id="category" name="category" value="<?php echo htmlspecialchars($book['category']); ?>">
                     </div>
                 </div>
-            </div>
-            
-            <div class="form-row">
                 <div class="form-col">
                     <div class="form-group">
                         <label for="quantity">Total Quantity</label>
                         <input type="number" id="quantity" name="quantity" value="<?php echo $book['total_quantity']; ?>" required>
                     </div>
                 </div>
-                <div class="form-col">
-                    <div class="form-group">
-                        <label for="shelf">Shelf Location</label>
-                        <input type="text" id="shelf" name="shelf" value="<?php echo htmlspecialchars($book['shelf_location']); ?>">
-                    </div>
-                </div>
-            </div>
-            
-            <div class="form-group">
-                <label for="cover">Book Cover Image</label>
-                <input type="file" id="cover" name="cover" class="form-control" accept="image/*">
-                <small class="text-muted">Leave empty to keep current cover. Supported formats: JPG, PNG, GIF. Max size: 2MB</small>
-                <?php if (!empty($book['cover_image'])): ?>
-                    <div class="current-cover-preview">
-                        <p><strong>Current Cover:</strong></p>
-                        <img src="<?php echo htmlspecialchars($book['cover_image']); ?>" alt="Current cover" style="max-width: 100px; height: auto; border-radius: 5px;">
-                    </div>
-                <?php endif; ?>
-            </div>
-            
-            <div class="form-group">
-                <label for="description">Description</label>
-                <textarea id="description" name="description" rows="4"><?php echo htmlspecialchars($book['description']); ?></textarea>
             </div>
             
             <div class="form-group text-right">
@@ -348,12 +280,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_book'])) {
     overflow: hidden;
 }
 
-.book-cover img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
 .no-cover {
     display: flex;
     align-items: center;
@@ -397,27 +323,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_book'])) {
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-.book-details-form input,
-.book-details-form textarea {
+.book-details-form input {
     width: 100%;
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 5px;
     font-size: 0.9em;
     box-sizing: border-box;
-}
-
-.current-cover-preview {
-    margin-top: 10px;
-    padding: 10px;
-    background: #f8f9fa;
-    border-radius: 5px;
-}
-
-.current-cover-preview p {
-    margin: 0 0 10px 0;
-    font-size: 0.9em;
-    color: #666;
 }
 
 @media (max-width: 992px) {

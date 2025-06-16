@@ -111,7 +111,7 @@ $params = [];
 $types = "";
 
 if (!empty($search)) {
-    $sql .= " AND (title LIKE ? OR author LIKE ? OR isbn LIKE ?)";
+    $sql .= " AND (title LIKE ? OR author LIKE ? OR book_no LIKE ?)";
     $searchParam = "%$search%";
     $params[] = $searchParam;
     $params[] = $searchParam;
@@ -153,7 +153,7 @@ while ($row = $result->fetch_assoc()) {
         <form action="" method="GET" class="search-form">
             <div class="search-row">
                 <div class="search-input-group">
-                    <input type="text" name="search" placeholder="Search books by title, author, or ISBN..." 
+                    <input type="text" name="search" placeholder="Search books by title, author, or book number..." 
                            class="form-control search-input" value="<?php echo htmlspecialchars($search); ?>">
                 </div>
                 
@@ -187,17 +187,14 @@ while ($row = $result->fetch_assoc()) {
             <?php foreach ($books as $book): ?>
                 <div class="book-card">
                     <div class="book-cover">
-                        <?php if (!empty($book['cover_image'])): ?>
-                            <img src="<?php echo htmlspecialchars($book['cover_image']); ?>" alt="<?php echo htmlspecialchars($book['title']); ?>">
-                        <?php else: ?>
-                            <i class="fas fa-book fa-3x"></i>
-                        <?php endif; ?>
+                        <i class="fas fa-book fa-3x"></i>
                     </div>
                     <div class="book-info">
                         <h3 class="book-title"><?php echo htmlspecialchars($book['title']); ?></h3>
                         <p class="book-author">By <?php echo htmlspecialchars($book['author']); ?></p>
                         <div class="book-details">
                             <span><?php echo htmlspecialchars($book['category']); ?></span>
+                            <span>Book No: <?php echo htmlspecialchars($book['book_no']); ?></span>
                             <span>
                                 <?php echo $book['available_quantity']; ?> / <?php echo $book['total_quantity']; ?> available
                             </span>
@@ -231,6 +228,7 @@ while ($row = $result->fetch_assoc()) {
                                 <div class="book-request-info">
                                     <h4><?php echo htmlspecialchars($book['title']); ?></h4>
                                     <p class="text-muted">by <?php echo htmlspecialchars($book['author']); ?></p>
+                                    <p class="text-muted">Book No: <?php echo htmlspecialchars($book['book_no']); ?></p>
                                     <div class="availability-info">
                                         <span class="badge badge-success">
                                             <?php echo $book['available_quantity']; ?> copies available
@@ -270,6 +268,7 @@ while ($row = $result->fetch_assoc()) {
                                 <div class="book-request-info">
                                     <h4><?php echo htmlspecialchars($book['title']); ?></h4>
                                     <p class="text-muted">by <?php echo htmlspecialchars($book['author']); ?></p>
+                                    <p class="text-muted">Book No: <?php echo htmlspecialchars($book['book_no']); ?></p>
                                     <div class="availability-info">
                                         <span class="badge badge-danger">Currently unavailable</span>
                                     </div>

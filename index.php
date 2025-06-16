@@ -105,10 +105,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <div class="auth-page">
         <div class="auth-container">
             <div class="auth-header">
-                <h1>
-                    <i class="fas fa-sign-in-alt"></i>
-                    Welcome Back
-                </h1>
+                <h1>Welcome Back</h1>
                 
             </div>
             
@@ -123,7 +120,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <form method="POST" action="" id="loginForm">
                     <div class="form-group">
                         <label for="login_identifier">
-                            <i class="fas fa-user"></i> 
                             Login Identifier
                         </label>
                         <input type="text" id="login_identifier" name="login_identifier" 
@@ -132,7 +128,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     
                     <div class="form-group">
                         <label for="password">
-                            <i class="fas fa-lock"></i> 
                             Password
                         </label>
                         <input type="password" id="password" name="password" 
@@ -157,31 +152,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     </div>
                     
                     <button type="submit" class="btn-auth" id="loginButton">
-                        <i class="fas fa-sign-in-alt"></i> 
                         Sign In
                     </button>
 
                     <div style="text-align: center;">
-                        <a href="recover_account.php" class="btn-link-auth primary">
-                            <i class="fas fa-search"></i> 
-                            Forgot your ID or Email?
-                        </a>
-                        
                         <a href="forgot_password.php" class="btn-link-auth">
                             <i class="fas fa-key"></i> 
                             Forgot Password?
                         </a>
 
+                        <a href="recover_account.php" class="btn-link-auth primary">
+                            <i class="fas fa-search"></i> 
+                            Forgot your ID or Email?
+                        </a>
+                        
                         <a href="register.php" class="btn-link-auth">
                             <i class="fas fa-user-plus"></i> 
-                            Create New Account
+                            Don't have an account? Register here
                         </a>
                     </div>
                 </form>
             </div>
             
             <div class="auth-footer">
-                <p>&copy; 2025 Library Management System. All rights reserved.</p>
+                <p>&copy; 2025 Book Bridge. All rights reserved.</p>
             </div>
         </div>
     </div>
@@ -287,3 +281,4 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </script>
 </body>
 </html>
+```

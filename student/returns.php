@@ -11,7 +11,7 @@ $userId = $_SESSION['user_id'];
 
 // Get all issued books for the user (current and returned)
 $sql = "
-    SELECT ib.*, b.title, b.author, b.isbn,
+    SELECT ib.*, b.title, b.author, b.book_no,
            DATEDIFF(CURRENT_DATE, ib.return_date) as days_overdue,
            CASE 
                WHEN ib.actual_return_date IS NULL AND CURRENT_DATE > ib.return_date THEN 'overdue'
@@ -122,7 +122,9 @@ $overdueBooks = array_filter($currentBooks, function($book) {
                                 <td>
                                     <strong><?php echo htmlspecialchars($book['title']); ?></strong><br>
                                     <small class="text-muted">by <?php echo htmlspecialchars($book['author']); ?></small><br>
-                                    <small class="text-muted">ISBN: <?php echo htmlspecialchars($book['isbn']); ?></small>
+                                    <?php if (!empty($book['book_no'])): ?>
+                                        <small class="text-muted">Book No: <?php echo htmlspecialchars($book['book_no']); ?></small>
+                                    <?php endif; ?>
                                 </td>
                                 <td><?php echo date('M d, Y', strtotime($book['issue_date'])); ?></td>
                                 <td><?php echo date('M d, Y', strtotime($book['return_date'])); ?></td>
@@ -150,7 +152,7 @@ $overdueBooks = array_filter($currentBooks, function($book) {
                                     <?php 
                                     if ($book['fine_amount'] > 0) {
                                         $fineClass = ($book['fine_status'] == 'pending') ? 'text-danger' : 'text-success';
-                                        echo '<span class="' . $fineClass . '">$' . number_format($book['fine_amount'], 2) . '</span><br>';
+                                        echo '<span class="' . $fineClass . '">PKR ' . number_format($book['fine_amount'], 2) . '</span><br>';
                                         echo '<small class="text-muted">(' . ucfirst($book['fine_status']) . ')</small>';
                                     } else {
                                         echo '<span class="text-muted">No fine</span>';
@@ -204,7 +206,9 @@ $overdueBooks = array_filter($currentBooks, function($book) {
                                 <td>
                                     <strong><?php echo htmlspecialchars($book['title']); ?></strong><br>
                                     <small class="text-muted">by <?php echo htmlspecialchars($book['author']); ?></small><br>
-                                    <small class="text-muted">ISBN: <?php echo htmlspecialchars($book['isbn']); ?></small>
+                                    <?php if (!empty($book['book_no'])): ?>
+                                        <small class="text-muted">Book No: <?php echo htmlspecialchars($book['book_no']); ?></small>
+                                    <?php endif; ?>
                                 </td>
                                 <td><?php echo date('M d, Y', strtotime($book['issue_date'])); ?></td>
                                 <td><?php echo date('M d, Y', strtotime($book['return_date'])); ?></td>
@@ -226,7 +230,7 @@ $overdueBooks = array_filter($currentBooks, function($book) {
                                     <?php 
                                     if ($book['fine_amount'] > 0) {
                                         $fineClass = $book['fine_status'] == 'pending' ? 'text-danger' : 'text-success';
-                                        echo '<span class="' . $fineClass . '">$' . number_format($book['fine_amount'], 2) . '</span><br>';
+                                        echo '<span class="' . $fineClass . '">PKR ' . number_format($book['fine_amount'], 2) . '</span><br>';
                                         echo '<small class="text-muted">(' . ucfirst($book['fine_status']) . ')</small>';
                                     } else {
                                         echo '<span class="text-muted">No fine</span>';

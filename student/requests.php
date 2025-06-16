@@ -67,7 +67,7 @@ if (isset($_POST['cancel_reservation_request'])) {
 
 // Get all book requests for the user
 $sql = "
-    SELECT br.*, b.title, b.author, b.isbn, b.available_quantity, 'book' as request_type
+    SELECT br.*, b.title, b.author, b.book_no, b.available_quantity, 'book' as request_type
     FROM book_requests br
     JOIN books b ON br.book_id = b.id
     WHERE br.user_id = ?
@@ -84,7 +84,7 @@ while ($row = $result->fetch_assoc()) {
 
 // Get all reservation requests for the user
 $sql = "
-    SELECT rr.*, b.title, b.author, b.isbn, b.available_quantity, 'reservation' as request_type
+    SELECT rr.*, b.title, b.author, b.book_no, b.available_quantity, 'reservation' as request_type
     FROM reservation_requests rr
     JOIN books b ON rr.book_id = b.id
     WHERE rr.user_id = ?
@@ -213,7 +213,9 @@ $cancelledReservationRequests = array_filter($reservationRequests, function($req
                                 <td>
                                     <strong><?php echo htmlspecialchars($request['title']); ?></strong><br>
                                     <small class="text-muted">by <?php echo htmlspecialchars($request['author']); ?></small><br>
-                                    <small class="text-muted">ISBN: <?php echo htmlspecialchars($request['isbn']); ?></small>
+                                    <?php if (!empty($request['book_no'])): ?>
+                                        <small class="text-muted">Book No: <?php echo htmlspecialchars($request['book_no']); ?></small>
+                                    <?php endif; ?>
                                 </td>
                                 <td><?php echo date('M d, Y H:i', strtotime($request['request_date'])); ?></td>
                                 <td>
@@ -297,7 +299,9 @@ $cancelledReservationRequests = array_filter($reservationRequests, function($req
                                 <td>
                                     <strong><?php echo htmlspecialchars($request['title']); ?></strong><br>
                                     <small class="text-muted">by <?php echo htmlspecialchars($request['author']); ?></small><br>
-                                    <small class="text-muted">ISBN: <?php echo htmlspecialchars($request['isbn']); ?></small>
+                                    <?php if (!empty($request['book_no'])): ?>
+                                        <small class="text-muted">Book No: <?php echo htmlspecialchars($request['book_no']); ?></small>
+                                    <?php endif; ?>
                                 </td>
                                 <td><?php echo date('M d, Y H:i', strtotime($request['request_date'])); ?></td>
                                 <td>
@@ -371,7 +375,9 @@ $cancelledReservationRequests = array_filter($reservationRequests, function($req
                                 <td>
                                     <strong><?php echo htmlspecialchars($request['title']); ?></strong><br>
                                     <small class="text-muted">by <?php echo htmlspecialchars($request['author']); ?></small><br>
-                                    <small class="text-muted">ISBN: <?php echo htmlspecialchars($request['isbn']); ?></small>
+                                    <?php if (!empty($request['book_no'])): ?>
+                                        <small class="text-muted">Book No: <?php echo htmlspecialchars($request['book_no']); ?></small>
+                                    <?php endif; ?>
                                 </td>
                                 <td><?php echo date('M d, Y H:i', strtotime($request['request_date'])); ?></td>
                                 <td>

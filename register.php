@@ -94,379 +94,176 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - Library Management System</title>
     <link rel="stylesheet" href="css/style.css">
-    <link rel="icon" type="image/svg+xml" href="../uploads/assests/book.svg">
+    <link rel="stylesheet" href="css/auth.css">
+    <link rel="icon" type="image/svg+xml" href="uploads/assests/book.svg">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        .register-page {
-             min-height: 100vh;
-             background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-                        url('../uploads/assests/register.jpg');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .register-container {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            width: 100%;
-            max-width: 600px;
-            overflow: hidden;
-            animation: slideUp 0.5s ease-out;
-        }
-
-        .register-header {
-            background: #0d47a1;
-            color: white;
-            padding: 30px 20px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .register-header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
-            transform: rotate(45deg);
-        }
-
-        .register-header h1 {
-            margin: 0;
-            font-size: 2em;
-            font-weight: 600;
-            position: relative;
-        }
-
-        .register-header p {
-            margin: 10px 0 0;
-            opacity: 0.9;
-            font-size: 1em;
-            position: relative;
-        }
-
-        .register-form {
-            padding: 40px 30px;
-        }
-
-        .form-row {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
-        .form-col {
-            flex: 1;
-        }
-
-        .form-group {
-            margin-bottom: 25px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #333;
-            font-weight: 500;
-        }
-
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e1e1e1;
-            border-radius: 8px;
-            font-size: 1em;
-            transition: all 0.3s ease;
-            box-sizing: border-box;
-        }
-
-        .form-group input:focus, .form-group select:focus {
-            border-color: #0d47a1;
-            box-shadow: 0 0 0 3px rgba(13, 71, 161, 0.1);
-            outline: none;
-        }
-
-        .password-requirements {
-            background: #f8f9fa;
-            border: 1px solid #e9ecef;
-            border-radius: 8px;
-            padding: 15px;
-            margin-top: 10px;
-            font-size: 0.9em;
-            display: none;
-        }
-
-        .password-requirements.show {
-            display: block;
-        }
-
-        .password-requirements h4 {
-            margin: 0 0 10px 0;
-            color: #495057;
-            font-size: 1em;
-        }
-
-        .requirement {
-            display: flex;
-            align-items: center;
-            margin-bottom: 5px;
-            color: #6c757d;
-        }
-
-        .requirement i {
-            margin-right: 8px;
-            width: 16px;
-        }
-
-        .requirement.valid {
-            color: #28a745;
-        }
-
-        .requirement.invalid {
-            color: #dc3545;
-        }
-
-        .btn-primary {
-            background: #0d47a1;
-            color: white;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 8px;
-            width: 100%;
-            font-size: 1.1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary:hover:not(:disabled) {
-            background: #1565c0;
-            transform: translateY(-2px);
-        }
-
-        .btn-primary:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .login-link {
-            display: block;
-            text-align: center;
-            margin-top: 20px;
-            color: #0d47a1;
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .login-link:hover {
-            text-decoration: underline;
-        }
-
-        .alert {
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            animation: fadeIn 0.3s ease-out;
-        }
-
-        .alert-danger {
-            background-color: #fee2e2;
-            color: #dc2626;
-            border: 1px solid #fecaca;
-        }
-
-        .alert-success {
-            background-color: #d1fae5;
-            color: #047857;
-            border: 1px solid #a7f3d0;
-        }
-
-        .unique-id-display {
-            background: #e3f2fd;
-            border: 2px solid #2196f3;
-            border-radius: 10px;
-            padding: 20px;
-            margin: 20px 0;
-            text-align: center;
-        }
-
-        .unique-id-display h3 {
-            color: #1976d2;
-            margin: 0 0 10px 0;
-        }
-
-        .unique-id-display .id-value {
-            font-size: 2em;
-            font-weight: bold;
-            color: #0d47a1;
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 10px 0;
-            letter-spacing: 2px;
-        }
-
-        .unique-id-display .copy-btn {
-            background: #2196f3;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin: 10px;
-        }
-
-        .unique-id-display .copy-btn:hover {
-            background: #1976d2;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .form-row {
-                flex-direction: column;
-                gap: 0;
-            }
-        }
-    </style>
 </head>
-<body class="register-page">
-    <div class="register-container">
-        <div class="register-header">
-            <h1><i class="fas fa-user-plus"></i> Register</h1>
-            <p>Create your library account</p>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="auth-navbar">
+        <div class="container">
+            <a href="index.php" class="auth-logo">
+                <i class="fas fa-book-reader"></i>
+                <span>Library Management</span>
+            </a>
+            <div class="auth-nav-links">
+                <a href="#gallery" class="auth-nav-link">
+                    <i class="fas fa-images"></i>
+                    <span>Gallery</span>
+                </a>
+                <a href="#about" class="auth-nav-link">
+                    <i class="fas fa-info-circle"></i>
+                    <span>About</span>
+                </a>
+            </div>
         </div>
-        
-        <div class="register-form">
-            <?php if (!empty($message)): ?>
-                <div class="alert alert-<?php echo $messageType; ?>">
-                    <i class="fas fa-<?php echo $messageType == 'success' ? 'check-circle' : 'exclamation-circle'; ?>"></i>
-                    <?php echo $message; ?>
-                </div>
-                
-                <?php if ($messageType == 'success' && !empty($generatedId)): ?>
-                    <div class="unique-id-display">
-                        <h3><i class="fas fa-id-card"></i> Your Unique ID</h3>
-                        <div class="id-value" id="uniqueId"><?php echo $generatedId; ?></div>
-                        <button type="button" class="copy-btn" onclick="copyToClipboard()">
-                            <i class="fas fa-copy"></i> Copy ID
-                        </button>
-                        <p><strong>Important:</strong> Save this ID safely. You can use either your email or this unique ID to login.</p>
-                        <a href="index.php" class="btn-primary" style="display: inline-block; margin-top: 15px; text-decoration: none;">
-                            <i class="fas fa-sign-in-alt"></i> Go to Login
-                        </a>
-                    </div>
-                <?php endif; ?>
-            <?php endif; ?>
-            
-            <?php if ($messageType != 'success'): ?>
-            <form method="POST" action="" id="registerForm">
-                <div class="form-row">
-                    <div class="form-col">
-                        <div class="form-group">
-                            <label for="name"><i class="fas fa-user"></i> Full Name *</label>
-                            <input type="text" id="name" name="name" required>
-                        </div>
-                    </div>
-                    <div class="form-col">
-                        <div class="form-group">
-                            <label for="email"><i class="fas fa-envelope"></i> Email *</label>
-                            <input type="email" id="email" name="email" required>
-                        </div>
-                    </div>
-                </div>
+    </nav>
 
-                <div class="form-group">
-                    <label for="role"><i class="fas fa-user-tag"></i> Role *</label>
-                    <select id="role" name="role" required>
-                        <option value="">Select Role</option>
-                        <option value="student">Student</option>
-                        <option value="faculty">Faculty</option>
-                    </select>
-                </div>
+    <div class="auth-page">
+        <div class="auth-container large">
+            <div class="auth-header">
+                <h1>
+                    <i class="fas fa-user-plus"></i>
+                    Create Account
+                </h1>
                 
-                <div class="form-row">
-                    <div class="form-col">
-                        <div class="form-group">
-                            <label for="password"><i class="fas fa-lock"></i> Password *</label>
-                            <input type="password" id="password" name="password" required>
-                            <div class="password-requirements" id="passwordRequirements">
-                                <h4>Password Requirements:</h4>
-                                <div class="requirement" id="length-req">
-                                    <i class="fas fa-times"></i>
-                                    <span>At least 8 characters long</span>
-                                </div>
-                                <div class="requirement" id="uppercase-req">
-                                    <i class="fas fa-times"></i>
-                                    <span>At least one uppercase letter (A-Z)</span>
-                                </div>
-                                <div class="requirement" id="special-req">
-                                    <i class="fas fa-times"></i>
-                                    <span>At least one special character (@, #, $)</span>
-                                </div>
+            </div>
+            
+            <div class="auth-body">
+                <?php if (!empty($message)): ?>
+                    <div class="alert alert-<?php echo $messageType; ?>">
+                        <i class="fas fa-<?php echo $messageType == 'success' ? 'check-circle' : 'exclamation-circle'; ?>"></i>
+                        <?php echo $message; ?>
+                    </div>
+                    
+                    <?php if ($messageType == 'success' && !empty($generatedId)): ?>
+                        <div class="unique-id-display">
+                            <h3>
+                                <i class="fas fa-id-card"></i> 
+                                Your Unique ID
+                            </h3>
+                            <div class="id-value" id="uniqueId"><?php echo $generatedId; ?></div>
+                            <button type="button" class="copy-btn" onclick="copyToClipboard()">
+                                <i class="fas fa-copy"></i> Copy ID
+                            </button>
+                            <p><strong>Important:</strong> Save this ID safely. You can use either your email or this unique ID to login.</p>
+                            <a href="index.php" class="btn-auth" style="display: inline-block; margin-top: 15px; text-decoration: none; width: auto; padding: 12px 24px;">
+                                <i class="fas fa-sign-in-alt"></i> Go to Login
+                            </a>
+                        </div>
+                    <?php endif; ?>
+                <?php endif; ?>
+                
+                <?php if ($messageType != 'success'): ?>
+                <form method="POST" action="" id="registerForm">
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="name">
+                                    <i class="fas fa-user"></i> 
+                                    Full Name *
+                                </label>
+                                <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="email">
+                                    <i class="fas fa-envelope"></i> 
+                                    Email Address *
+                                </label>
+                                <input type="email" id="email" name="email" placeholder="Enter your email" required>
                             </div>
                         </div>
                     </div>
-                    <div class="form-col">
-                        <div class="form-group">
-                            <label for="confirm_password"><i class="fas fa-lock"></i> Confirm Password *</label>
-                            <input type="password" id="confirm_password" name="confirm_password" required>
+
+                    <div class="form-group">
+                        <label for="role">
+                            <i class="fas fa-user-tag"></i> 
+                            Role *
+                        </label>
+                        <select id="role" name="role" required>
+                            <option value="">Select your role</option>
+                            <option value="student">Student</option>
+                            <option value="faculty">Faculty Member</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="password">
+                                    <i class="fas fa-lock"></i> 
+                                    Password *
+                                </label>
+                                <input type="password" id="password" name="password" placeholder="Create a strong password" required>
+                                <div class="password-requirements" id="passwordRequirements">
+                                    <h4>Password Requirements:</h4>
+                                    <div class="requirement" id="length-req">
+                                        <i class="fas fa-times"></i>
+                                        <span>At least 8 characters long</span>
+                                    </div>
+                                    <div class="requirement" id="uppercase-req">
+                                        <i class="fas fa-times"></i>
+                                        <span>At least one uppercase letter (A-Z)</span>
+                                    </div>
+                                    <div class="requirement" id="special-req">
+                                        <i class="fas fa-times"></i>
+                                        <span>At least one special character (@, #, $)</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="confirm_password">
+                                    <i class="fas fa-lock"></i> 
+                                    Confirm Password *
+                                </label>
+                                <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm your password" required>
+                            </div>
                         </div>
                     </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-col">
-                        <div class="form-group">
-                            <label for="department"><i class="fas fa-building"></i> Department</label>
-                            <input type="text" id="department" name="department">
+                    
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="department">
+                                    <i class="fas fa-building"></i> 
+                                    Department
+                                </label>
+                                <input type="text" id="department" name="department" placeholder="Your department (optional)">
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="phone">
+                                    <i class="fas fa-phone"></i> 
+                                    Phone Number
+                                </label>
+                                <input type="tel" id="phone" name="phone" placeholder="03123456789 (optional)">
+                            </div>
                         </div>
                     </div>
-                    <div class="form-col">
-                        <div class="form-group">
-                            <label for="phone"><i class="fas fa-phone"></i> Phone Number</label>
-                            <input type="tel" id="phone" name="phone" placeholder="03123456789">
-                        </div>
+                    
+                    <button type="submit" class="btn-auth" id="submitBtn" disabled>
+                        <i class="fas fa-user-plus"></i> 
+                        Create Account
+                    </button>
+                    
+                    <div style="text-align: center;">
+                        <a href="index.php" class="btn-link-auth">
+                            <i class="fas fa-sign-in-alt"></i> 
+                            Already have an account? Sign in
+                        </a>
                     </div>
-                </div>
-                
-                <button type="submit" class="btn btn-primary" id="submitBtn" disabled>
-                    <i class="fas fa-user-plus"></i> Register
-                </button>
-                
-                <a href="index.php" class="login-link">
-                    <i class="fas fa-sign-in-alt"></i> Already have an account? Login here
-                </a>
-            </form>
-            <?php endif; ?>
+                </form>
+                <?php endif; ?>
+            </div>
+            
+            <div class="auth-footer">
+                <p>&copy; 2025 Library Management System. All rights reserved.</p>
+            </div>
         </div>
     </div>
 
@@ -477,11 +274,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 const btn = document.querySelector('.copy-btn');
                 const originalText = btn.innerHTML;
                 btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
-                btn.style.background = '#4caf50';
+                btn.classList.add('copied');
                 
                 setTimeout(function() {
                     btn.innerHTML = originalText;
-                    btn.style.background = '#2196f3';
+                    btn.classList.remove('copied');
                 }, 2000);
             });
         }

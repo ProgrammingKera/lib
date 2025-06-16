@@ -124,7 +124,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="auth-header">
                 <h1>
                     
-                    Create Account
+                    Register
                 </h1>
                 
             </div>

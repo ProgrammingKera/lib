@@ -137,7 +137,7 @@ $conn->query($sql);
         <div class="auth-container">
             <div class="auth-header">
                 <h1>
-                    <i class="fas fa-lock"></i>
+                    
                     Reset Password
                 </h1>
                 <p>Create your new password</p>
@@ -155,7 +155,7 @@ $conn->query($sql);
                     <form method="POST" action="reset_password.php?token=<?php echo htmlspecialchars($token); ?>" id="resetForm">
                         <div class="form-group">
                             <label for="password">
-                                <i class="fas fa-lock"></i> 
+                                
                                 New Password
                             </label>
                             <input type="password" id="password" name="password" placeholder="Enter your new password" required>
@@ -178,14 +178,14 @@ $conn->query($sql);
                         
                         <div class="form-group">
                             <label for="confirm_password">
-                                <i class="fas fa-lock"></i> 
+                                
                                 Confirm New Password
                             </label>
                             <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm your new password" required>
                         </div>
                         
                         <button type="submit" class="btn-auth" id="submitBtn" disabled>
-                            <i class="fas fa-save"></i> 
+                            
                             Update Password
                         </button>
                     </form>

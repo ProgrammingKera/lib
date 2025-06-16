@@ -130,7 +130,7 @@ $conn->query($sql);
         <div class="container">
             <a href="index.php" class="auth-logo">
                 <img src="uploads/assests/library-logo.png" alt="Library Logo">
-                <span>Library Management</span>
+                
             </a>
             <div class="auth-nav-links">
                 <a href="gallery.php" class="auth-nav-link">
@@ -149,7 +149,7 @@ $conn->query($sql);
         <div class="auth-container">
             <div class="auth-header">
                 <h1>
-                    <i class="fas fa-key"></i>
+                    
                     Forgot Password
                 </h1>
                 <p>Reset your account password</p>
@@ -166,7 +166,7 @@ $conn->query($sql);
                 <form method="POST" action="">
                     <div class="form-group">
                         <label for="email">
-                            <i class="fas fa-envelope"></i> 
+                             
                             Email Address
                         </label>
                         <input type="email" id="email" name="email" placeholder="Enter your registered email address" required>
@@ -192,7 +192,7 @@ $conn->query($sql);
             </div>
             
             <div class="auth-footer">
-                <p>&copy; 2025 Library Management System. All rights reserved.</p>
+                <p>&copy; 2025 Book Bridge. All rights reserved.</p>
             </div>
         </div>
     </div>

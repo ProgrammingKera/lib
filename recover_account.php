@@ -223,7 +223,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <div class="auth-container large">
             <div class="auth-header">
                 <h1>
-                    <i class="fas fa-search"></i>
+                    
                     Account Recovery
                 </h1>
                 <p>Find your forgotten ID or Email</p>
@@ -255,22 +255,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <?php endif; ?>
                 
                 <?php if ($step == 1): ?>
-                    <div class="auth-help">
-                        <h4><i class="fas fa-info-circle"></i> How to recover your account</h4>
-                        <ul>
-                            <li><strong>Enter your full name</strong> as registered in the system</li>
-                            <li><strong>Add phone number or department</strong> for more accurate results</li>
-                            <li><strong>More details help us</strong> find your account quickly</li>
-                            <li><strong>Search is case-insensitive</strong> for easier matching</li>
-                        </ul>
-                    </div>
+                    
 
                     <form method="POST" action="">
                         <input type="hidden" name="step" value="1">
                         
                         <div class="form-group">
                             <label for="name">
-                                <i class="fas fa-user"></i> 
+                                
                                 Full Name *
                             </label>
                             <input type="text" id="name" name="name" placeholder="Enter your full name as registered" required value="<?php echo isset($_POST['name']) ? htmlspecialchars($_POST['name']) : ''; ?>">
@@ -280,7 +272,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <div class="form-col">
                                 <div class="form-group">
                                     <label for="phone">
-                                        <i class="fas fa-phone"></i> 
+                                         
                                         Phone Number
                                     </label>
                                     <input type="tel" id="phone" name="phone" placeholder="Your registered phone number" value="<?php echo isset($_POST['phone']) ? htmlspecialchars($_POST['phone']) : ''; ?>">
@@ -289,7 +281,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <div class="form-col">
                                 <div class="form-group">
                                     <label for="department">
-                                        <i class="fas fa-building"></i> 
+                                        
                                         Department
                                     </label>
                                     <input type="text" id="department" name="department" placeholder="Your department" value="<?php echo isset($_POST['department']) ? htmlspecialchars($_POST['department']) : ''; ?>">
@@ -414,7 +406,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
             
             <div class="auth-footer">
-                <p>&copy; 2025 Library Management System. All rights reserved.</p>
+                <p>&copy; 2025 Book Bridge. All rights reserved.</p>
             </div>
         </div>
     </div>

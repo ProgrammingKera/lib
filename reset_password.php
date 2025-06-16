@@ -117,15 +117,15 @@ $conn->query($sql);
     <nav class="auth-navbar">
         <div class="container">
             <a href="index.php" class="auth-logo">
-                <i class="fas fa-book-reader"></i>
-                <span>Library Management</span>
+                <img src="uploads/assests/library-logo.png" alt="Library Logo">
+                
             </a>
             <div class="auth-nav-links">
-                <a href="#gallery" class="auth-nav-link">
+                <a href="gallery.php" class="auth-nav-link">
                     <i class="fas fa-images"></i>
                     <span>Gallery</span>
                 </a>
-                <a href="#about" class="auth-nav-link">
+                <a href="about.php" class="auth-nav-link">
                     <i class="fas fa-info-circle"></i>
                     <span>About</span>
                 </a>

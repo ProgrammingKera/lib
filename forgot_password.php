@@ -66,12 +66,12 @@ $stmt->bind_param("isss", $user['id'], $token, $createdAt, $expiresAt);
                 $mail->Body = "
     <div style='background-color: #F7F9FC; padding: 30px; font-family: Arial, sans-serif; color: #333;'>
         <div style='max-width: 600px; margin: auto; background-color: #ffffff; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);'>
-            <h2 style='color: #0A74DA;'>Password Reset Request</h2>
+            <h2 style='color: #8B5E3C;'>Password Reset Request</h2>
             <p>Dear {$user['name']},</p>
             <p>We received a request to reset your password. Please click the button below to proceed:</p>
             <div style='text-align: center; margin: 30px 0;'>
                 <a href='{$resetLink}' 
-                   style='background-color: #0A74DA; color: white; text-decoration: none; padding: 12px 24px; font-size: 16px; border-radius: 5px; display: inline-block;'>
+                   style='background-color: #8B5E3C; color: white; text-decoration: none; padding: 12px 24px; font-size: 16px; border-radius: 5px; display: inline-block;'>
                     Reset Password
                 </a>
             </div>
@@ -129,15 +129,15 @@ $conn->query($sql);
     <nav class="auth-navbar">
         <div class="container">
             <a href="index.php" class="auth-logo">
-                <i class="fas fa-book-reader"></i>
+                <img src="uploads/assests/library-logo.png" alt="Library Logo">
                 <span>Library Management</span>
             </a>
             <div class="auth-nav-links">
-                <a href="#gallery" class="auth-nav-link">
+                <a href="gallery.php" class="auth-nav-link">
                     <i class="fas fa-images"></i>
                     <span>Gallery</span>
                 </a>
-                <a href="#about" class="auth-nav-link">
+                <a href="about.php" class="auth-nav-link">
                     <i class="fas fa-info-circle"></i>
                     <span>About</span>
                 </a>

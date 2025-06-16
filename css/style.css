@@ -1,32 +1,33 @@
 /* Main Styles for Library Management System */
 
 :root {
-  --primary-color: #8B5E3C;       /* Warm Brown */
-  --primary-light: #B07B50;       /* Lighter Brown */
-  --primary-dark: #5C3B27;        /* Dark Brown */
+  --primary-color: #7C4A2D;       /* Rich Warm Brown */
+  --primary-light: #A66E4A;       /* Soft Light Brown */
+  --primary-dark: #5A3620;        /* Deep Brown */
 
-  --secondary-color: #F5F3EF;     /* Light Creamy Beige */
-  --accent-color: #D4A373;        /* Muted Terracotta/Peach-Brown Accent */
+  --secondary-color: #F9F5F0;     /* Soft Cream Background */
+  --accent-color: #C97B4A;        /* Warm Terracotta Accent */
 
-  --success-color: #6B8E23;       /* Olive Green - works well with brown */
-  --warning-color: #D2691E;       /* Chocolate Orange (Burnt Orange) */
-  --danger-color: #A52A2A;        /* Classic Brownish Red */
+  --success-color: #6D9A58;       /* Muted Olive Green */
+  --warning-color: #E68A2E;       /* Deep Amber/Orange */
+  --danger-color: #B34343;        /* Earthy Brick Red */
 
-  --text-color: #3E2C1C;          /* Deep Text Brown */
-  --text-light: #7B6651;          /* Muted Light Brown Text */
+  --text-color: #3B2A1A;          /* Dark Espresso Text */
+  --text-light: #846D5B;          /* Taupe for subtle text */
 
   --white: #FFFFFF;
 
-  --gray-100: #EFEDE9;            /* Very Light Beige */
-  --gray-200: #E0D8CF;
-  --gray-300: #C8BFB5;
-  --gray-400: #A99C91;
-  --gray-500: #8C7F75;
+  --gray-100: #F4EFEB;            /* Very Light Warm Gray */
+  --gray-200: #E3DCD7;
+  --gray-300: #CFC3BC;
+  --gray-400: #B0A49C;
+  --gray-500: #8E7C71;
 
-  --border-radius: 8px;
-  --box-shadow: 0 4px 12px rgba(139, 94, 60, 0.15); /* Brown shadow */
-  --transition: all 0.3s ease;
+  --border-radius: 10px;
+  --box-shadow: 0 6px 16px rgba(124, 74, 45, 0.15);  /* Softer and deeper brown shadow */
+  --transition: all 0.3s ease-in-out;
 }
+
 
 
 * {

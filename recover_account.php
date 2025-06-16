@@ -155,7 +155,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
 
         .login-prompt {
-            background: linear-gradient(135deg, rgba(10, 116, 218, 0.1) 0%, rgba(7, 75, 156, 0.1) 100%);
+            background: linear-gradient(135deg, rgba(139, 94, 60, 0.1) 0%, rgba(92, 59, 39, 0.1) 100%);
             border: 2px solid var(--primary-color);
             border-radius: 15px;
             padding: 20px;
@@ -203,15 +203,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <nav class="auth-navbar">
         <div class="container">
             <a href="index.php" class="auth-logo">
-                <i class="fas fa-book-reader"></i>
-                <span>Library Management</span>
+                <img src="uploads/assests/library-logo.png" alt="Library Logo">
+                
             </a>
             <div class="auth-nav-links">
-                <a href="#gallery" class="auth-nav-link">
+                <a href="gallery.php" class="auth-nav-link">
                     <i class="fas fa-images"></i>
                     <span>Gallery</span>
                 </a>
-                <a href="#about" class="auth-nav-link">
+                <a href="about.php" class="auth-nav-link">
                     <i class="fas fa-info-circle"></i>
                     <span>About</span>
                 </a>

@@ -23,9 +23,7 @@ $categories = [];
 $sql = "
     SELECT 
         category,
-        COUNT(*) as book_count,
-        SUM(available_quantity) as available_books,
-        SUM(total_quantity) as total_books
+        COUNT(*) as book_count
     FROM books 
     WHERE category != '' AND category IS NOT NULL
     GROUP BY category 
@@ -37,15 +35,6 @@ if ($result) {
         $categories[] = $row;
     }
 }
-
-// Get total library stats
-$totalBooksQuery = "SELECT COUNT(*) as total FROM books";
-$totalResult = $conn->query($totalBooksQuery);
-$totalBooks = $totalResult->fetch_assoc()['total'];
-
-$availableBooksQuery = "SELECT SUM(available_quantity) as available FROM books";
-$availableResult = $conn->query($availableBooksQuery);
-$availableBooks = $availableResult->fetch_assoc()['available'];
 ?>
 
 <!DOCTYPE html>
@@ -179,41 +168,7 @@ $availableBooks = $availableResult->fetch_assoc()['available'];
             margin-bottom: 30px;
         }
 
-        /* Library Stats */
-        .library-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 50px;
-        }
-
-        .stat-item {
-            background: rgba(255, 255, 255, 0.9);
-            padding: 25px;
-            border-radius: 15px;
-            text-align: center;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        .stat-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-        }
-
-        .stat-number {
-            font-size: 2.5em;
-            font-weight: bold;
-            color: var(--primary-color);
-            margin-bottom: 10px;
-        }
-
-        .stat-label {
-            color: var(--text-light);
-            font-weight: 500;
-        }
-
-        /* Bookshelf Layout */
+        /* Library Shelves */
         .library-shelves {
             background: rgba(255, 255, 255, 0.9);
             border-radius: 20px;
@@ -237,138 +192,99 @@ $availableBooks = $availableResult->fetch_assoc()['available'];
             color: var(--text-light);
         }
 
-        .bookshelf-grid {
+        /* Category Grid - Door Style */
+        .category-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 30px;
+            max-width: 1000px;
+            margin: 0 auto;
         }
 
-        .bookshelf-section {
-            background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+        .category-door {
+            background: linear-gradient(145deg, #8B5E3C, #7C4A2D);
             border-radius: 15px;
-            padding: 25px;
+            padding: 0;
             box-shadow: 
-                0 8px 25px rgba(0, 0, 0, 0.1),
-                inset 0 1px 0 rgba(255, 255, 255, 0.6);
-            transition: all 0.3s ease;
+                0 15px 35px rgba(0, 0, 0, 0.2),
+                inset 0 2px 0 rgba(255, 255, 255, 0.1);
+            transition: all 0.4s ease;
             cursor: pointer;
             position: relative;
             overflow: hidden;
+            height: 200px;
+            border: 3px solid #5A3620;
         }
 
-        .bookshelf-section::before {
+        .category-door::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
-            transform: scaleX(0);
-            transition: transform 0.3s ease;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            pointer-events: none;
         }
 
-        .bookshelf-section:hover::before {
-            transform: scaleX(1);
-        }
-
-        .bookshelf-section:hover {
-            transform: translateY(-8px);
+        .category-door:hover {
+            transform: perspective(1000px) rotateY(-15deg) scale(1.05);
             box-shadow: 
-                0 15px 40px rgba(0, 0, 0, 0.15),
-                inset 0 1px 0 rgba(255, 255, 255, 0.6);
+                0 25px 50px rgba(0, 0, 0, 0.3),
+                inset 0 2px 0 rgba(255, 255, 255, 0.2);
         }
 
-        .shelf-header {
+        .door-content {
             display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .shelf-icon {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
-            border-radius: 12px;
-            display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            margin-right: 15px;
+            height: 100%;
             color: white;
-            font-size: 1.5em;
-        }
-
-        .shelf-title {
-            flex: 1;
-        }
-
-        .shelf-title h3 {
-            font-size: 1.4em;
-            color: var(--primary-color);
-            margin-bottom: 5px;
-            font-weight: 600;
-        }
-
-        .shelf-subtitle {
-            color: var(--text-light);
-            font-size: 0.9em;
-        }
-
-        .shelf-stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .shelf-stat {
             text-align: center;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.7);
-            border-radius: 10px;
-            transition: all 0.3s ease;
+            position: relative;
+            z-index: 2;
         }
 
-        .shelf-stat:hover {
-            background: rgba(255, 255, 255, 0.9);
-            transform: scale(1.05);
+        .door-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+            color: #F9F5F0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
 
-        .shelf-stat-number {
-            font-size: 1.5em;
-            font-weight: bold;
-            color: var(--primary-color);
-            margin-bottom: 5px;
+        .door-title {
+            font-size: 1.3em;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
 
-        .shelf-stat-label {
-            font-size: 0.8em;
-            color: var(--text-light);
+        .door-subtitle {
+            font-size: 0.9em;
+            opacity: 0.9;
             font-weight: 500;
         }
 
-        .browse-btn {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 1em;
-            margin-top: 20px;
-            cursor: pointer;
+        .door-handle {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 12px;
+            background: #C97B4A;
+            border-radius: 50%;
+            box-shadow: 
+                0 2px 4px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
             transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
         }
 
-        .browse-btn:hover {
-            background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(139, 94, 60, 0.3);
+        .category-door:hover .door-handle {
+            background: #E68A2E;
+            transform: translateY(-50%) scale(1.2);
         }
 
         /* Responsive Design */
@@ -391,18 +307,21 @@ $availableBooks = $availableResult->fetch_assoc()['available'];
                 padding: 30px 20px;
             }
 
-            .library-stats {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .bookshelf-grid {
-                grid-template-columns: 1fr;
+            .category-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
                 gap: 20px;
             }
 
-            .shelf-stats {
-                grid-template-columns: 1fr;
-                gap: 10px;
+            .category-door {
+                height: 180px;
+            }
+
+            .door-icon {
+                font-size: 2.5em;
+            }
+
+            .door-title {
+                font-size: 1.1em;
             }
 
             .catalog-container {
@@ -419,12 +338,8 @@ $availableBooks = $availableResult->fetch_assoc()['available'];
                 font-size: 2em;
             }
 
-            .library-stats {
+            .category-grid {
                 grid-template-columns: 1fr;
-            }
-
-            .stat-number {
-                font-size: 2em;
             }
 
             .shelves-header h2 {
@@ -439,7 +354,7 @@ $availableBooks = $availableResult->fetch_assoc()['available'];
         <div class="navbar-container">
             <a href="#" class="navbar-brand">
                 <img src="../uploads/assests/library-logo.png" alt="Library Logo">
-                <h1>Book Bridge</h1>
+                
             </a>
             
             <div class="navbar-actions">
@@ -461,63 +376,26 @@ $availableBooks = $availableResult->fetch_assoc()['available'];
         <div class="welcome-section">
             <h1>Welcome to Our Digital Library</h1>
             <p>Discover thousands of books across various categories</p>
-            
-            <!-- Library Stats -->
-            <div class="library-stats">
-                <div class="stat-item">
-                    <div class="stat-number"><?php echo count($categories); ?></div>
-                    <div class="stat-label">Categories</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number"><?php echo $totalBooks; ?></div>
-                    <div class="stat-label">Total Books</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number"><?php echo $availableBooks; ?></div>
-                    <div class="stat-label">Available Now</div>
-                </div>
-            </div>
         </div>
 
         <!-- Library Shelves -->
         <div class="library-shelves">
             <div class="shelves-header">
                 <h2>Browse by Category</h2>
-                <p>Click on any category to explore our collection</p>
+                <p>Click on any door to explore our collection</p>
             </div>
 
-            <div class="bookshelf-grid">
+            <div class="category-grid">
                 <?php foreach ($categories as $category): ?>
-                    <div class="bookshelf-section" onclick="window.location.href='category_books.php?category=<?php echo urlencode($category['category']); ?>'">
-                        <div class="shelf-header">
-                            <div class="shelf-icon">
+                    <div class="category-door" onclick="window.location.href='category_books.php?category=<?php echo urlencode($category['category']); ?>'">
+                        <div class="door-content">
+                            <div class="door-icon">
                                 <i class="fas fa-book-open"></i>
                             </div>
-                            <div class="shelf-title">
-                                <h3><?php echo htmlspecialchars($category['category']); ?></h3>
-                                <div class="shelf-subtitle">Explore this collection</div>
-                            </div>
+                            <div class="door-title"><?php echo htmlspecialchars($category['category']); ?></div>
+                            <div class="door-subtitle"><?php echo $category['book_count']; ?> books</div>
                         </div>
-
-                        <div class="shelf-stats">
-                            <div class="shelf-stat">
-                                <div class="shelf-stat-number"><?php echo $category['book_count']; ?></div>
-                                <div class="shelf-stat-label">Titles</div>
-                            </div>
-                            <div class="shelf-stat">
-                                <div class="shelf-stat-number"><?php echo $category['total_books']; ?></div>
-                                <div class="shelf-stat-label">Total Copies</div>
-                            </div>
-                            <div class="shelf-stat">
-                                <div class="shelf-stat-number"><?php echo $category['available_books']; ?></div>
-                                <div class="shelf-stat-label">Available</div>
-                            </div>
-                        </div>
-
-                        <button class="browse-btn">
-                            <i class="fas fa-arrow-right"></i>
-                            Browse Books
-                        </button>
+                        <div class="door-handle"></div>
                     </div>
                 <?php endforeach; ?>
             </div>

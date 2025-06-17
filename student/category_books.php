@@ -83,29 +83,45 @@ $stmt->execute();
 $result = $stmt->get_result();
 $pendingFines = $result->fetch_assoc()['total'] ?? 0;
 
+// Handle search
+$search = isset($_GET['search']) ? trim($_GET['search']) : '';
+
 // Pagination settings
-$booksPerPage = 12;
+$booksPerPage = 15;
 $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
 $offset = ($page - 1) * $booksPerPage;
 
-// Get total count of books in this category
-$countSql = "SELECT COUNT(*) as total FROM books WHERE category = ?";
+// Build search query
+$sql = "SELECT * FROM books WHERE category = ?";
+$params = [$category];
+$types = "s";
+
+if (!empty($search)) {
+    $sql .= " AND (title LIKE ? OR author LIKE ? OR book_no LIKE ?)";
+    $searchParam = "%$search%";
+    $params[] = $searchParam;
+    $params[] = $searchParam;
+    $params[] = $searchParam;
+    $types .= "sss";
+}
+
+// Get total count
+$countSql = str_replace("SELECT *", "SELECT COUNT(*)", $sql);
 $stmt = $conn->prepare($countSql);
-$stmt->bind_param("s", $category);
+$stmt->bind_param($types, ...$params);
 $stmt->execute();
 $result = $stmt->get_result();
-$totalBooks = $result->fetch_assoc()['total'];
+$totalBooks = $result->fetch_assoc()['COUNT(*)'];
 $totalPages = ceil($totalBooks / $booksPerPage);
 
 // Get books for current page
-$sql = "
-    SELECT * FROM books 
-    WHERE category = ? 
-    ORDER BY title 
-    LIMIT ? OFFSET ?
-";
+$sql .= " ORDER BY title LIMIT ? OFFSET ?";
+$params[] = $booksPerPage;
+$params[] = $offset;
+$types .= "ii";
+
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("sii", $category, $booksPerPage, $offset);
+$stmt->bind_param($types, ...$params);
 $stmt->execute();
 $result = $stmt->get_result();
 $books = [];
@@ -233,46 +249,114 @@ while ($row = $result->fetch_assoc()) {
         /* Category Header */
         .category-header {
             background: rgba(255, 255, 255, 0.9);
-            padding: 40px;
+            padding: 30px;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            margin-bottom: 40px;
+            margin-bottom: 30px;
             text-align: center;
         }
 
         .category-header h1 {
-            font-size: 3em;
-            margin-bottom: 15px;
+            font-size: 2.5em;
+            margin-bottom: 10px;
             background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
-        .category-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 20px;
-            margin-top: 30px;
-        }
-
-        .category-stat {
-            background: rgba(255, 255, 255, 0.7);
+        /* Search Section */
+        .search-section {
+            background: rgba(255, 255, 255, 0.9);
             padding: 20px;
             border-radius: 15px;
-            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
         }
 
-        .category-stat-number {
-            font-size: 2em;
-            font-weight: bold;
+        .search-form {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid var(--gray-300);
+            border-radius: 25px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(139, 94, 60, 0.1);
+        }
+
+        .search-btn {
+            padding: 12px 25px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .clear-btn {
+            padding: 12px 20px;
+            background: var(--gray-400);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .clear-btn:hover {
+            background: var(--gray-500);
+            transform: translateY(-2px);
+        }
+
+        /* View Toggle */
+        .view-toggle {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .view-btn {
+            padding: 10px 20px;
+            border: 2px solid var(--primary-color);
+            background: white;
             color: var(--primary-color);
-            margin-bottom: 5px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
         }
 
-        .category-stat-label {
-            color: var(--text-light);
-            font-weight: 500;
+        .view-btn.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .view-btn:hover {
+            background: var(--primary-color);
+            color: white;
         }
 
         /* Fine Warning */
@@ -315,19 +399,79 @@ while ($row = $result->fetch_assoc()) {
             border: 1px solid rgba(244, 67, 54, 0.3);
         }
 
-        /* Books Grid */
+        /* Books Section */
         .books-section {
             background: rgba(255, 255, 255, 0.9);
             border-radius: 20px;
-            padding: 40px;
+            padding: 30px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
 
+        /* Table View (Default) */
+        .books-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+
+        .books-table th,
+        .books-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-300);
+        }
+
+        .books-table th {
+            background: var(--gray-100);
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .books-table tr:hover {
+            background: var(--gray-100);
+        }
+
+        .book-title-cell {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .book-author-cell {
+            color: var(--text-light);
+            font-style: italic;
+        }
+
+        .availability-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+
+        .available {
+            background: rgba(76, 175, 80, 0.1);
+            color: #2e7d32;
+        }
+
+        .unavailable {
+            background: rgba(244, 67, 54, 0.1);
+            color: #c62828;
+        }
+
+        /* Grid View */
         .books-grid {
-            display: grid;
+            display: none;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 25px;
             margin-bottom: 40px;
+        }
+
+        .books-grid.active {
+            display: grid;
+        }
+
+        .books-table.hidden {
+            display: none;
         }
 
         .book-card {
@@ -344,34 +488,6 @@ while ($row = $result->fetch_assoc()) {
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
         }
 
-        .book-cover {
-            height: 200px;
-            background: linear-gradient(135deg, var(--gray-200), var(--gray-300));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-light);
-            font-size: 3em;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .book-cover::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
-            transform: translateX(-100%);
-            transition: transform 0.6s ease;
-        }
-
-        .book-card:hover .book-cover::before {
-            transform: translateX(100%);
-        }
-
         .book-info {
             padding: 20px;
         }
@@ -382,10 +498,6 @@ while ($row = $result->fetch_assoc()) {
             margin: 0 0 8px 0;
             color: var(--primary-color);
             line-height: 1.3;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
         }
 
         .book-author {
@@ -402,26 +514,6 @@ while ($row = $result->fetch_assoc()) {
             font-size: 0.9em;
         }
 
-        .book-status {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .status-indicator {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-        }
-
-        .status-available {
-            background: var(--success-color);
-        }
-
-        .status-unavailable {
-            background: var(--danger-color);
-        }
-
         .book-actions {
             display: flex;
             gap: 10px;
@@ -429,7 +521,7 @@ while ($row = $result->fetch_assoc()) {
 
         .action-btn {
             flex: 1;
-            padding: 12px;
+            padding: 10px;
             border: none;
             border-radius: 8px;
             font-weight: 600;
@@ -443,25 +535,21 @@ while ($row = $result->fetch_assoc()) {
         }
 
         .btn-request {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            background: var(--primary-color);
             color: white;
         }
 
         .btn-request:hover {
-            background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(139, 94, 60, 0.3);
+            background: var(--primary-dark);
         }
 
         .btn-reserve {
-            background: linear-gradient(135deg, var(--warning-color), #f57c00);
+            background: var(--warning-color);
             color: white;
         }
 
         .btn-reserve:hover {
-            background: linear-gradient(135deg, #f57c00, var(--warning-color));
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 152, 0, 0.3);
+            background: #f57c00;
         }
 
         .btn-disabled {
@@ -476,7 +564,7 @@ while ($row = $result->fetch_assoc()) {
             justify-content: center;
             align-items: center;
             gap: 10px;
-            margin-top: 40px;
+            margin-top: 30px;
         }
 
         .pagination-btn {
@@ -495,7 +583,6 @@ while ($row = $result->fetch_assoc()) {
         .pagination-btn:hover {
             background: var(--primary-color);
             color: white;
-            transform: translateY(-2px);
         }
 
         .pagination-btn.active {
@@ -507,12 +594,6 @@ while ($row = $result->fetch_assoc()) {
             opacity: 0.5;
             cursor: not-allowed;
             pointer-events: none;
-        }
-
-        .pagination-info {
-            color: var(--text-light);
-            font-weight: 500;
-            margin: 0 15px;
         }
 
         /* Modal Styles */
@@ -687,20 +768,33 @@ while ($row = $result->fetch_assoc()) {
             }
 
             .category-header h1 {
-                font-size: 2.5em;
+                font-size: 2em;
             }
 
             .category-header {
-                padding: 30px 20px;
+                padding: 20px;
+            }
+
+            .search-form {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .books-table {
+                font-size: 0.9em;
+            }
+
+            .books-table th,
+            .books-table td {
+                padding: 10px 8px;
             }
 
             .books-grid {
-                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-                gap: 20px;
+                grid-template-columns: 1fr;
             }
 
             .books-section {
-                padding: 25px 20px;
+                padding: 20px;
             }
 
             .category-container {
@@ -711,21 +805,11 @@ while ($row = $result->fetch_assoc()) {
                 flex-wrap: wrap;
                 gap: 5px;
             }
-
-            .pagination-info {
-                width: 100%;
-                text-align: center;
-                margin: 10px 0;
-            }
         }
 
         @media (max-width: 480px) {
             .category-header h1 {
-                font-size: 2em;
-            }
-
-            .books-grid {
-                grid-template-columns: 1fr;
+                font-size: 1.8em;
             }
 
             .modal {
@@ -745,7 +829,7 @@ while ($row = $result->fetch_assoc()) {
         <div class="navbar-container">
             <a href="catalog.php" class="navbar-brand">
                 <img src="../uploads/assests/library-logo.png" alt="Library Logo">
-                <h1>Book Bridge</h1>
+                
             </a>
             
             <div class="navbar-actions">
@@ -771,21 +855,24 @@ while ($row = $result->fetch_assoc()) {
         <div class="category-header">
             <h1><?php echo htmlspecialchars($category); ?></h1>
             <p>Explore our collection of <?php echo htmlspecialchars($category); ?> books</p>
-            
-            <div class="category-stats">
-                <div class="category-stat">
-                    <div class="category-stat-number"><?php echo $totalBooks; ?></div>
-                    <div class="category-stat-label">Total Books</div>
-                </div>
-                <div class="category-stat">
-                    <div class="category-stat-number"><?php echo count($books); ?></div>
-                    <div class="category-stat-label">Showing</div>
-                </div>
-                <div class="category-stat">
-                    <div class="category-stat-number"><?php echo $page; ?>/<?php echo $totalPages; ?></div>
-                    <div class="category-stat-label">Page</div>
-                </div>
-            </div>
+        
+
+        <!-- Search Section -->
+        
+            <form method="GET" class="search-form" style="margin-top:10px;">
+                <input type="hidden" name="category" value="<?php echo htmlspecialchars($category); ?>">
+                <input type="text" name="search" placeholder="Search books by title, author, or book number..." 
+                       class="search-input" value="<?php echo htmlspecialchars($search); ?>">
+                <button type="submit" class="search-btn">
+                    <i class="fas fa-search"></i> Search
+                </button>
+                <?php if (!empty($search)): ?>
+                    <a href="?category=<?php echo urlencode($category); ?>" class="clear-btn">
+                        <i class="fas fa-times"></i> Clear
+                    </a>
+                <?php endif; ?>
+            </form>
+        
         </div>
 
         <?php if (!empty($message)): ?>
@@ -806,29 +893,90 @@ while ($row = $result->fetch_assoc()) {
             </div>
         <?php endif; ?>
 
+        <!-- View Toggle -->
+        <div class="view-toggle">
+            <button class="view-btn active" onclick="switchView('table')">
+                <i class="fas fa-list"></i> Table View
+            </button>
+            <button class="view-btn" onclick="switchView('grid')">
+                <i class="fas fa-th"></i> Grid View
+            </button>
+        </div>
+
         <!-- Books Section -->
         <div class="books-section">
             <?php if (count($books) > 0): ?>
-                <div class="books-grid">
+                <!-- Table View -->
+                <table class="books-table" id="tableView">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Author</th>
+                            <th>Book No.</th>
+                            <th>Publisher</th>
+                            <th>Availability</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($books as $book): ?>
+                            <tr>
+                                <td class="book-title-cell"><?php echo htmlspecialchars($book['title']); ?></td>
+                                <td class="book-author-cell"><?php echo htmlspecialchars($book['author']); ?></td>
+                                <td><?php echo htmlspecialchars($book['book_no']); ?></td>
+                                <td><?php echo htmlspecialchars($book['publisher']); ?></td>
+                                <td>
+                                    <?php if ($book['available_quantity'] > 0): ?>
+                                        <span class="availability-badge available">
+                                            <?php echo $book['available_quantity']; ?> / <?php echo $book['total_quantity']; ?> available
+                                        </span>
+                                    <?php else: ?>
+                                        <span class="availability-badge unavailable">Not available</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td>
+                                    <?php if ($pendingFines > 0): ?>
+                                        <button class="action-btn btn-disabled" disabled title="Pay pending fines to request books">
+                                            <i class="fas fa-ban"></i> Cannot Request
+                                        </button>
+                                    <?php elseif ($book['available_quantity'] > 0): ?>
+                                        <button class="action-btn btn-request" onclick="openRequestModal(<?php echo $book['id']; ?>, '<?php echo addslashes($book['title']); ?>', '<?php echo addslashes($book['author']); ?>', '<?php echo addslashes($book['book_no']); ?>', <?php echo $book['available_quantity']; ?>)">
+                                            <i class="fas fa-book"></i> Request
+                                        </button>
+                                    <?php else: ?>
+                                        <button class="action-btn btn-reserve" onclick="openReservationModal(<?php echo $book['id']; ?>, '<?php echo addslashes($book['title']); ?>', '<?php echo addslashes($book['author']); ?>', '<?php echo addslashes($book['book_no']); ?>')">
+                                            <i class="fas fa-bookmark"></i> Reserve
+                                        </button>
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+
+                <!-- Grid View -->
+                <div class="books-grid" id="gridView">
                     <?php foreach ($books as $book): ?>
                         <div class="book-card">
-                            <div class="book-cover">
-                                <i class="fas fa-book"></i>
-                            </div>
                             <div class="book-info">
                                 <h3 class="book-title"><?php echo htmlspecialchars($book['title']); ?></h3>
                                 <p class="book-author">by <?php echo htmlspecialchars($book['author']); ?></p>
                                 <div class="book-details">
-                                    <div class="book-status">
-                                        <span class="status-indicator <?php echo $book['available_quantity'] > 0 ? 'status-available' : 'status-unavailable'; ?>"></span>
-                                        <span><?php echo $book['available_quantity']; ?> / <?php echo $book['total_quantity']; ?> available</span>
-                                    </div>
                                     <?php if (!empty($book['book_no'])): ?>
                                         <span><strong>Book No:</strong> <?php echo htmlspecialchars($book['book_no']); ?></span>
                                     <?php endif; ?>
                                     <?php if (!empty($book['publisher'])): ?>
                                         <span><strong>Publisher:</strong> <?php echo htmlspecialchars($book['publisher']); ?></span>
                                     <?php endif; ?>
+                                    <span>
+                                        <?php if ($book['available_quantity'] > 0): ?>
+                                            <span class="availability-badge available">
+                                                <?php echo $book['available_quantity']; ?> / <?php echo $book['total_quantity']; ?> available
+                                            </span>
+                                        <?php else: ?>
+                                            <span class="availability-badge unavailable">Not available</span>
+                                        <?php endif; ?>
+                                    </span>
                                 </div>
                                 <div class="book-actions">
                                     <?php if ($pendingFines > 0): ?>
@@ -854,7 +1002,7 @@ while ($row = $result->fetch_assoc()) {
                 <?php if ($totalPages > 1): ?>
                     <div class="pagination-container">
                         <?php if ($page > 1): ?>
-                            <a href="?category=<?php echo urlencode($category); ?>&page=<?php echo $page - 1; ?>" class="pagination-btn">
+                            <a href="?category=<?php echo urlencode($category); ?>&search=<?php echo urlencode($search); ?>&page=<?php echo $page - 1; ?>" class="pagination-btn">
                                 <i class="fas fa-chevron-left"></i>
                             </a>
                         <?php else: ?>
@@ -868,14 +1016,14 @@ while ($row = $result->fetch_assoc()) {
                         $endPage = min($totalPages, $page + 2);
                         
                         if ($startPage > 1): ?>
-                            <a href="?category=<?php echo urlencode($category); ?>&page=1" class="pagination-btn">1</a>
+                            <a href="?category=<?php echo urlencode($category); ?>&search=<?php echo urlencode($search); ?>&page=1" class="pagination-btn">1</a>
                             <?php if ($startPage > 2): ?>
                                 <span class="pagination-btn disabled">...</span>
                             <?php endif; ?>
                         <?php endif; ?>
 
                         <?php for ($i = $startPage; $i <= $endPage; $i++): ?>
-                            <a href="?category=<?php echo urlencode($category); ?>&page=<?php echo $i; ?>" 
+                            <a href="?category=<?php echo urlencode($category); ?>&search=<?php echo urlencode($search); ?>&page=<?php echo $i; ?>" 
                                class="pagination-btn <?php echo $i == $page ? 'active' : ''; ?>">
                                 <?php echo $i; ?>
                             </a>
@@ -885,11 +1033,11 @@ while ($row = $result->fetch_assoc()) {
                             <?php if ($endPage < $totalPages - 1): ?>
                                 <span class="pagination-btn disabled">...</span>
                             <?php endif; ?>
-                            <a href="?category=<?php echo urlencode($category); ?>&page=<?php echo $totalPages; ?>" class="pagination-btn"><?php echo $totalPages; ?></a>
+                            <a href="?category=<?php echo urlencode($category); ?>&search=<?php echo urlencode($search); ?>&page=<?php echo $totalPages; ?>" class="pagination-btn"><?php echo $totalPages; ?></a>
                         <?php endif; ?>
 
                         <?php if ($page < $totalPages): ?>
-                            <a href="?category=<?php echo urlencode($category); ?>&page=<?php echo $page + 1; ?>" class="pagination-btn">
+                            <a href="?category=<?php echo urlencode($category); ?>&search=<?php echo urlencode($search); ?>&page=<?php echo $page + 1; ?>" class="pagination-btn">
                                 <i class="fas fa-chevron-right"></i>
                             </a>
                         <?php else: ?>
@@ -897,20 +1045,23 @@ while ($row = $result->fetch_assoc()) {
                                 <i class="fas fa-chevron-right"></i>
                             </span>
                         <?php endif; ?>
-
-                        <div class="pagination-info">
-                            Showing <?php echo ($offset + 1); ?>-<?php echo min($offset + $booksPerPage, $totalBooks); ?> of <?php echo $totalBooks; ?> books
-                        </div>
                     </div>
                 <?php endif; ?>
             <?php else: ?>
                 <div class="empty-state">
                     <i class="fas fa-book-open"></i>
                     <h3>No Books Found</h3>
-                    <p>There are no books in the <?php echo htmlspecialchars($category); ?> category at the moment.</p>
-                    <a href="catalog.php" class="action-btn btn-request" style="margin-top: 20px; display: inline-flex;">
-                        <i class="fas fa-arrow-left"></i> Back to Catalog
-                    </a>
+                    <?php if (!empty($search)): ?>
+                        <p>No books match your search criteria. Try adjusting your search terms.</p>
+                        <a href="?category=<?php echo urlencode($category); ?>" class="action-btn btn-request" style="margin-top: 20px; display: inline-flex;">
+                            <i class="fas fa-list"></i> View All Books
+                        </a>
+                    <?php else: ?>
+                        <p>There are no books in the <?php echo htmlspecialchars($category); ?> category at the moment.</p>
+                        <a href="catalog.php" class="action-btn btn-request" style="margin-top: 20px; display: inline-flex;">
+                            <i class="fas fa-arrow-left"></i> Back to Catalog
+                        </a>
+                    <?php endif; ?>
                 </div>
             <?php endif; ?>
         </div>
@@ -984,6 +1135,37 @@ while ($row = $result->fetch_assoc()) {
     </div>
 
     <script>
+        // View switching functionality
+        function switchView(viewType) {
+            const tableView = document.getElementById('tableView');
+            const gridView = document.getElementById('gridView');
+            const viewBtns = document.querySelectorAll('.view-btn');
+            
+            // Remove active class from all buttons
+            viewBtns.forEach(btn => btn.classList.remove('active'));
+            
+            if (viewType === 'table') {
+                tableView.style.display = 'table';
+                gridView.classList.remove('active');
+                document.querySelector('.view-btn:first-child').classList.add('active');
+            } else {
+                tableView.style.display = 'none';
+                gridView.classList.add('active');
+                document.querySelector('.view-btn:last-child').classList.add('active');
+            }
+            
+            // Save preference
+            localStorage.setItem('preferredView', viewType);
+        }
+
+        // Load saved view preference
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedView = localStorage.getItem('preferredView');
+            if (savedView === 'grid') {
+                switchView('grid');
+            }
+        });
+
         // Open request modal
         function openRequestModal(bookId, title, author, bookNo, availableQuantity) {
             document.getElementById('requestBookId').value = bookId;
@@ -1035,16 +1217,6 @@ while ($row = $result->fetch_assoc()) {
                     modal.classList.remove('active');
                 });
             }
-        });
-
-        // Smooth scroll to top when pagination is clicked
-        document.querySelectorAll('.pagination-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                window.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
-                });
-            });
         });
     </script>
 </body>

@@ -74,12 +74,7 @@ if ($result) {
 
 <div class="container">
     <!-- Back to Catalog Button -->
-    <div class="catalog-nav">
-        <a href="catalog.php" class="btn-catalog">
-            <i class="fas fa-book-open"></i>
-            Back to Library Catalog
-        </a>
-    </div>
+    
 
     <h1 class="page-title">Welcome, <?php echo htmlspecialchars($_SESSION['name']); ?>!</h1>
 
@@ -213,26 +208,12 @@ if ($result) {
     <div class="quick-actions">
         <h3>Quick Actions</h3>
         <div class="action-buttons">
-            <a href="catalog.php" class="action-button">
-                <i class="fas fa-book-open"></i>
-                <span>Library Catalog</span>
-            </a>
-            <a href="books.php" class="action-button">
-                <i class="fas fa-search"></i>
-                <span>Search Books</span>
-            </a>
-            <a href="ebooks.php" class="action-button">
-                <i class="fas fa-file-pdf"></i>
-                <span>E-Books</span>
-            </a>
+            
             <a href="returns.php" class="action-button">
                 <i class="fas fa-book-reader"></i>
                 <span>My Books</span>
             </a>
-            <a href="reservations.php" class="action-button">
-                <i class="fas fa-bookmark"></i>
-                <span>My Reservations</span>
-            </a>
+            
             <a href="profile.php" class="action-button">
                 <i class="fas fa-user-edit"></i>
                 <span>Edit Profile</span>
@@ -242,30 +223,7 @@ if ($result) {
 </div>
 
 <style>
-.catalog-nav {
-    margin-bottom: 20px;
-    text-align: center;
-}
 
-.btn-catalog {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 25px;
-    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
-    color: white;
-    text-decoration: none;
-    border-radius: 25px;
-    font-weight: 600;
-    transition: var(--transition);
-    box-shadow: 0 4px 15px rgba(139, 94, 60, 0.3);
-}
-
-.btn-catalog:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(139, 94, 60, 0.4);
-    color: white;
-}
 
 .quick-actions {
     margin-top: 30px;

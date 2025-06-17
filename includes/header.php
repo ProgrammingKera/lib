@@ -119,7 +119,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
                         <i class="fas fa-tachometer-alt"></i>
                         <span class="sidebar-menu-label">Dashboard</span>
                     </a>
-                    <a href="books.php" class="sidebar-menu-item <?php echo $currentPage == 'books.php' ? 'active' : ''; ?>">
+                    <a href="catalog.php" class="sidebar-menu-item <?php echo $currentPage == 'books.php' ? 'active' : ''; ?>">
                         <i class="fas fa-book"></i>
                         <span class="sidebar-menu-label">Books</span>
                     </a>

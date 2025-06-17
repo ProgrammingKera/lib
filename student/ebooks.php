@@ -278,22 +278,25 @@ while ($row = $result->fetch_assoc()) {
 
 .ebooks-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 25px;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 18px;
 }
 
 .ebook-card {
     background: var(--white);
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
     overflow: hidden;
     transition: var(--transition);
     border: 1px solid var(--gray-200);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
 .ebook-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    transform: translateY(-5px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
 }
 
 .ebook-cover {
@@ -301,7 +304,7 @@ while ($row = $result->fetch_assoc()) {
     text-align: center;
     position: relative;
     border-bottom: 1px solid var(--gray-200);
-    height: 200px;
+    height: 180px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -314,37 +317,31 @@ while ($row = $result->fetch_assoc()) {
     border-radius: 8px;
 }
 
-.ebook-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-}
-
 .file-type-badge {
     position: absolute;
-    top: 15px;
-    right: 15px;
+    top: 10px;
+    right: 10px;
     background: var(--primary-color);
     color: var(--white);
-    padding: 5px 12px;
-    border-radius: 20px;
-    font-size: 0.8em;
+    padding: 4px 10px;
+    border-radius: 15px;
+    font-size: 0.75em;
     font-weight: 600;
-    letter-spacing: 0.5px;
 }
 
 .ebook-info {
-    padding: 25px;
+    padding: 18px;
     flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .ebook-title {
-    font-size: 1.3em;
+    font-size: 1.1em;
     font-weight: 700;
     color: var(--primary-color);
-    margin: 0 0 8px 0;
-    line-height: 1.3;
+    margin-bottom: 6px;
+    line-height: 1.2;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
@@ -353,75 +350,66 @@ while ($row = $result->fetch_assoc()) {
 
 .ebook-author {
     color: var(--text-light);
-    font-size: 1em;
-    margin: 0 0 15px 0;
+    font-size: 0.95em;
+    margin-bottom: 10px;
     font-weight: 500;
 }
 
 .ebook-category {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-bottom: 15px;
+    gap: 6px;
+    margin-bottom: 10px;
     color: var(--primary-color);
-    font-size: 0.9em;
-    font-weight: 500;
-}
-
-.ebook-category i {
-    font-size: 0.8em;
+    font-size: 0.85em;
 }
 
 .ebook-meta {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 15px;
-    font-size: 0.85em;
+    margin-bottom: 12px;
+    font-size: 0.8em;
     color: var(--text-light);
 }
 
-.meta-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
 .meta-item i {
-    font-size: 0.9em;
+    font-size: 0.85em;
     color: var(--primary-color);
 }
 
 .ebook-description {
     color: var(--text-color);
-    font-size: 0.9em;
-    line-height: 1.5;
-    margin-bottom: 20px;
+    font-size: 0.85em;
+    line-height: 1.4;
     background: var(--gray-100);
-    padding: 12px;
-    border-radius: 8px;
+    padding: 10px;
+    border-radius: 6px;
     border-left: 3px solid var(--primary-color);
+    margin-bottom: 12px;
+    max-height: 70px;
+    overflow: hidden;
 }
 
 .ebook-actions {
-    padding: 20px 25px;
+    padding: 15px 18px;
     background: var(--gray-100);
     display: flex;
-    gap: 10px;
     justify-content: space-between;
     align-items: center;
 }
 
 .ebook-actions .btn {
-    flex: 1;
-    text-align: center;
     font-weight: 600;
-    border-radius: 8px;
+    border-radius: 6px;
     transition: var(--transition);
+    padding: 8px 14px;
+    font-size: 0.85em;
 }
 
 .ebook-actions .btn-primary {
     background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
     border: none;
+    color: var(--white);
 }
 
 .ebook-actions .btn-primary:hover {
@@ -431,10 +419,7 @@ while ($row = $result->fetch_assoc()) {
 
 .ebook-actions .btn-secondary {
     background: var(--gray-400);
-    border: none;
     color: var(--text-color);
-    flex: 0 0 auto;
-    padding: 8px 15px;
 }
 
 .ebook-actions .btn-secondary:hover {
@@ -442,6 +427,7 @@ while ($row = $result->fetch_assoc()) {
     transform: translateY(-1px);
     color: var(--white);
 }
+
 
 .ebook-modal .modal {
     max-width: 600px;

@@ -81,23 +81,7 @@ if ($userResult) {
     }
 }
 
-// Get recently issued books for quick reference
-$recentIssues = [];
-$recentSql = "
-    SELECT ib.*, b.title, b.author, u.name as user_name
-    FROM issued_books ib
-    JOIN books b ON ib.book_id = b.id
-    JOIN users u ON ib.user_id = u.id
-    WHERE ib.status = 'issued'
-    ORDER BY ib.issue_date DESC
-    LIMIT 10
-";
-$recentResult = $conn->query($recentSql);
-if ($recentResult) {
-    while ($row = $recentResult->fetch_assoc()) {
-        $recentIssues[] = $row;
-    }
-}
+
 ?>
 
 <h1 class="page-title">Issue Book</h1>
@@ -182,7 +166,7 @@ if ($recentResult) {
                         </div>
                     </div>
                     
-                    <div class="form-group text-right">
+                    <div class="form-group text-right" style="margin-top: 20px;">
                         <button type="reset" class="btn btn-secondary">
                             <i class="fas fa-undo"></i> Reset
                         </button>
@@ -195,69 +179,7 @@ if ($recentResult) {
         </div>
     </div>
     
-    <!-- Recently Issued Books -->
-    <div class="dashboard-col">
-        <div class="card">
-            <div class="card-header">
-                <h3><i class="fas fa-history"></i> Recently Issued Books</h3>
-                <span class="badge badge-primary"><?php echo count($recentIssues); ?></span>
-            </div>
-            <div class="card-body">
-                <?php if (count($recentIssues) > 0): ?>
-                    <div class="recent-issues-list">
-                        <?php foreach ($recentIssues as $issue): ?>
-                            <div class="recent-issue-item">
-                                <div class="issue-book-info">
-                                    <h4><?php echo htmlspecialchars($issue['title']); ?></h4>
-                                    <p class="author">by <?php echo htmlspecialchars($issue['author']); ?></p>
-                                </div>
-                                <div class="issue-user-info">
-                                    <p class="user-name">
-                                        <i class="fas fa-user"></i>
-                                        <?php echo htmlspecialchars($issue['user_name']); ?>
-                                    </p>
-                                    <p class="issue-date">
-                                        <i class="fas fa-calendar"></i>
-                                        <?php echo date('M d, Y', strtotime($issue['issue_date'])); ?>
-                                    </p>
-                                    <p class="return-date">
-                                        <i class="fas fa-calendar-alt"></i>
-                                        Due: <?php echo date('M d, Y', strtotime($issue['return_date'])); ?>
-                                    </p>
-                                </div>
-                                <div class="issue-status">
-                                    <?php
-                                    $today = new DateTime();
-                                    $dueDate = new DateTime($issue['return_date']);
-                                    $daysLeft = $today->diff($dueDate)->days;
-                                    
-                                    if ($today > $dueDate) {
-                                        echo '<span class="badge badge-danger">Overdue</span>';
-                                    } elseif ($daysLeft <= 3) {
-                                        echo '<span class="badge badge-warning">Due Soon</span>';
-                                    } else {
-                                        echo '<span class="badge badge-success">Active</span>';
-                                    }
-                                    ?>
-                                </div>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                    
-                    <div class="text-center mt-3">
-                        <a href="returns.php" class="btn btn-secondary">
-                            <i class="fas fa-list"></i> View All Issued Books
-                        </a>
-                    </div>
-                <?php else: ?>
-                    <div class="empty-state">
-                        <i class="fas fa-book fa-3x"></i>
-                        <p>No books issued recently</p>
-                    </div>
-                <?php endif; ?>
-            </div>
-        </div>
-    </div>
+    
 </div>
 
 <script>

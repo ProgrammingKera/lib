@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     
     // Validate input
     if (empty($login_identifier) || empty($password)) {
-        $error = "Please enter both login identifier and password";
+        $error = "Please enter both Unique ID and password";
     } else {
         // Check login attempts and security
         $securityCheck = checkLoginAttempts($conn, $login_identifier, $ipAddress);
@@ -78,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <title>Library Management System - Login</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/auth.css">
-    <link rel="icon" type="image/svg+xml" href="uploads/assests/book.svg">
+    <link rel="icon" type="image/svg+xml" href="uploads/assests/book.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
@@ -120,10 +120,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <form method="POST" action="" id="loginForm">
                     <div class="form-group">
                         <label for="login_identifier">
-                            Login Identifier
+                            Unique ID
                         </label>
                         <input type="text" id="login_identifier" name="login_identifier" 
-                               placeholder="Enter your Unique ID or Email" required>
+                               placeholder="Unique ID or Email" required>
                     </div>
                     
                     <div class="form-group">
@@ -131,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             Password
                         </label>
                         <input type="password" id="password" name="password" 
-                               placeholder="Enter your password" required>
+                               placeholder="Password" required>
                         <i class="fas fa-eye password-toggle" id="toggleIcon" onclick="togglePassword()"></i>
                         
                         <div class="password-requirements" id="passwordRequirements">
@@ -161,10 +161,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             Forgot Password?
                         </a>
 
-                        <a href="recover_account.php" class="btn-link-auth primary">
-                            <i class="fas fa-search"></i> 
-                            Forgot your ID or Email?
-                        </a>
+                        
                         
                         <a href="register.php" class="btn-link-auth">
                             <i class="fas fa-user-plus"></i> 

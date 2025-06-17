@@ -79,26 +79,8 @@ if ($result) {
     <h1 class="page-title">Welcome, <?php echo htmlspecialchars($_SESSION['name']); ?>!</h1>
 
     <!-- Stats Overview -->
-    <div class="stats-container">
-        <div class="stat-card">
-            <div class="stat-icon">
-                <i class="fas fa-book"></i>
-            </div>
-            <div class="stat-info">
-                <div class="stat-number"><?php echo count($currentlyIssued); ?></div>
-                <div class="stat-label">Books Borrowed</div>
-            </div>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-icon">
-                <i class="fas fa-clock"></i>
-            </div>
-            <div class="stat-info">
-                <div class="stat-number"><?php echo count($pendingRequests); ?></div>
-                <div class="stat-label">Pending Requests</div>
-            </div>
-        </div>
+    <div class="stats-container" >
+        
 
         <div class="stat-card">
             <div class="stat-icon">
@@ -110,18 +92,10 @@ if ($result) {
             </div>
         </div>
 
-        <div class="stat-card">
-            <div class="stat-icon">
-                <i class="fas fa-bell"></i>
-            </div>
-            <div class="stat-info">
-                <div class="stat-number"><?php echo count($notifications); ?></div>
-                <div class="stat-label">New Notifications</div>
-            </div>
-        </div>
+        
     </div>
 
-    <div class="dashboard-row">
+    <div class="dashboard-col">
         <!-- Currently Borrowed Books -->
         <div class="dashboard-col">
             <div class="card">
@@ -205,66 +179,13 @@ if ($result) {
     </div>
 
     <!-- Quick Actions -->
-    <div class="quick-actions">
-        <h3>Quick Actions</h3>
-        <div class="action-buttons">
-            
-            <a href="returns.php" class="action-button">
-                <i class="fas fa-book-reader"></i>
-                <span>My Books</span>
-            </a>
-            
-            <a href="profile.php" class="action-button">
-                <i class="fas fa-user-edit"></i>
-                <span>Edit Profile</span>
-            </a>
-        </div>
-    </div>
+    
 </div>
 
 <style>
 
 
-.quick-actions {
-    margin-top: 30px;
-}
 
-.action-buttons {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
-    margin-top: 15px;
-}
-
-.action-button {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    background: var(--white);
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-    transition: var(--transition);
-    color: var(--text-color);
-    text-decoration: none;
-}
-
-.action-button:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-    color: var(--primary-color);
-}
-
-.action-button i {
-    font-size: 2em;
-    margin-bottom: 10px;
-    color: var(--primary-color);
-}
-
-.action-button span {
-    font-weight: 500;
-}
 
 .notification-list {
     display: flex;
@@ -294,6 +215,7 @@ if ($result) {
 }
 
 .stats-container {
+    margin-top:30px;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 20px;

@@ -23,13 +23,6 @@ $userId = $_SESSION['user_id'];
 $message = '';
 $messageType = '';
 
-// Get category from URL
-$category = isset($_GET['category']) ? trim($_GET['category']) : '';
-if (empty($category)) {
-    header('Location: catalog.php');
-    exit();
-}
-
 // Handle book request submission
 if (isset($_POST['request_book'])) {
     $bookId = (int)$_POST['book_id'];
@@ -83,8 +76,18 @@ $stmt->execute();
 $result = $stmt->get_result();
 $pendingFines = $result->fetch_assoc()['total'] ?? 0;
 
-// Handle search
+// Handle search and filtering
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
+$category = isset($_GET['category']) ? trim($_GET['category']) : '';
+
+// Get all categories
+$categories = [];
+$result = $conn->query("SELECT DISTINCT category FROM books WHERE category != '' ORDER BY category");
+if ($result) {
+    while ($row = $result->fetch_assoc()) {
+        $categories[] = $row['category'];
+    }
+}
 
 // Pagination settings
 $booksPerPage = 15;
@@ -92,9 +95,9 @@ $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
 $offset = ($page - 1) * $booksPerPage;
 
 // Build search query
-$sql = "SELECT * FROM books WHERE category = ?";
-$params = [$category];
-$types = "s";
+$sql = "SELECT * FROM books WHERE 1=1";
+$params = [];
+$types = "";
 
 if (!empty($search)) {
     $sql .= " AND (title LIKE ? OR author LIKE ? OR book_no LIKE ?)";
@@ -105,10 +108,18 @@ if (!empty($search)) {
     $types .= "sss";
 }
 
+if (!empty($category)) {
+    $sql .= " AND category = ?";
+    $params[] = $category;
+    $types .= "s";
+}
+
 // Get total count
 $countSql = str_replace("SELECT *", "SELECT COUNT(*)", $sql);
 $stmt = $conn->prepare($countSql);
-$stmt->bind_param($types, ...$params);
+if (!empty($params)) {
+    $stmt->bind_param($types, ...$params);
+}
 $stmt->execute();
 $result = $stmt->get_result();
 $totalBooks = $result->fetch_assoc()['COUNT(*)'];
@@ -135,7 +146,7 @@ while ($row = $result->fetch_assoc()) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo htmlspecialchars($category); ?> - Library Catalog</title>
+    <title>All Books - Library Catalog</title>
     <link rel="stylesheet" href="../css/style.css">
     <link rel="icon" type="image/svg+xml" href="../uploads/assests/book.svg">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -220,7 +231,7 @@ while ($row = $result->fetch_assoc()) {
             transform: translateY(-2px);
         }
 
-.dashboard-btn,
+        .dashboard-btn,
 .logout-btn {
     
     color: var(--white);
@@ -248,15 +259,16 @@ while ($row = $result->fetch_assoc()) {
 .logout-btn:hover {
     background: var(--primary-light); /* Soft hover instead of dark */
 }
+
         /* Main Content */
-        .category-container {
+        .books-container {
             max-width: 1400px;
             margin: 0 auto;
             padding: 40px 20px;
         }
 
-        /* Category Header */
-        .category-header {
+        /* Header */
+        .books-header {
             background: rgba(255, 255, 255, 0.9);
             padding: 30px;
             border-radius: 20px;
@@ -265,7 +277,7 @@ while ($row = $result->fetch_assoc()) {
             text-align: center;
         }
 
-        .category-header h1 {
+        .books-header h1 {
             font-size: 2.5em;
             margin-bottom: 10px;
             background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
@@ -274,25 +286,34 @@ while ($row = $result->fetch_assoc()) {
             background-clip: text;
         }
 
-        /* Search Section */
-        .search-section {
+        /* Search and Filter Section */
+        .search-filter-section {
             background: rgba(255, 255, 255, 0.9);
-            padding: 20px;
+            padding: 25px;
             border-radius: 15px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             margin-bottom: 30px;
         }
 
-        .search-form {
+        .search-filter-form {
             display: flex;
             gap: 15px;
             align-items: center;
-            max-width: 600px;
-            margin: 0 auto;
+            flex-wrap: wrap;
         }
 
-        .search-input {
+        .search-input-group {
+            flex: 2;
+            min-width: 250px;
+        }
+
+        .filter-select-group {
             flex: 1;
+            min-width: 200px;
+        }
+
+        .search-input, .filter-select {
+            width: 100%;
             padding: 12px 15px;
             border: 2px solid var(--gray-300);
             border-radius: 25px;
@@ -300,21 +321,33 @@ while ($row = $result->fetch_assoc()) {
             transition: all 0.3s ease;
         }
 
-        .search-input:focus {
+        .search-input:focus, .filter-select:focus {
             border-color: var(--primary-color);
             outline: none;
             box-shadow: 0 0 0 3px rgba(139, 94, 60, 0.1);
         }
 
-        .search-btn {
+        .search-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-btn, .clear-btn {
             padding: 12px 25px;
-            background: var(--primary-color);
-            color: white;
             border: none;
             border-radius: 25px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .search-btn {
+            background: var(--primary-color);
+            color: white;
         }
 
         .search-btn:hover {
@@ -323,15 +356,8 @@ while ($row = $result->fetch_assoc()) {
         }
 
         .clear-btn {
-            padding: 12px 20px;
             background: var(--gray-400);
             color: white;
-            border: none;
-            border-radius: 25px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
         }
 
         .clear-btn:hover {
@@ -348,7 +374,7 @@ while ($row = $result->fetch_assoc()) {
         }
 
         .view-btn {
-            padding: 10px 20px;
+            padding: 12px 25px;
             border: 2px solid var(--primary-color);
             background: white;
             color: var(--primary-color);
@@ -356,6 +382,9 @@ while ($row = $result->fetch_assoc()) {
             cursor: pointer;
             transition: all 0.3s ease;
             font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .view-btn.active {
@@ -366,6 +395,7 @@ while ($row = $result->fetch_assoc()) {
         .view-btn:hover {
             background: var(--primary-color);
             color: white;
+            transform: translateY(-2px);
         }
 
         /* Fine Warning */
@@ -416,7 +446,7 @@ while ($row = $result->fetch_assoc()) {
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
 
-        /* Table View (Default) */
+        /* Table View */
         .books-table {
             width: 100%;
             border-collapse: collapse;
@@ -776,17 +806,27 @@ while ($row = $result->fetch_assoc()) {
                 flex-wrap: wrap;
             }
 
-            .category-header h1 {
+            .books-header h1 {
                 font-size: 2em;
             }
 
-            .category-header {
+            .books-header {
                 padding: 20px;
             }
 
-            .search-form {
+            .search-filter-form {
                 flex-direction: column;
                 align-items: stretch;
+            }
+
+            .search-input-group,
+            .filter-select-group {
+                flex: none;
+                min-width: auto;
+            }
+
+            .search-actions {
+                justify-content: center;
             }
 
             .books-table {
@@ -806,7 +846,7 @@ while ($row = $result->fetch_assoc()) {
                 padding: 20px;
             }
 
-            .category-container {
+            .books-container {
                 padding: 20px 15px;
             }
 
@@ -817,7 +857,7 @@ while ($row = $result->fetch_assoc()) {
         }
 
         @media (max-width: 480px) {
-            .category-header h1 {
+            .books-header h1 {
                 font-size: 1.8em;
             }
 
@@ -838,7 +878,6 @@ while ($row = $result->fetch_assoc()) {
         <div class="navbar-container">
             <a href="catalog.php" class="navbar-brand">
                 <img src="../uploads/assests/library-logo.png" alt="Library Logo">
-                
             </a>
             
             <div class="navbar-actions">
@@ -859,29 +898,11 @@ while ($row = $result->fetch_assoc()) {
     </nav>
 
     <!-- Main Content -->
-    <div class="category-container">
-        <!-- Category Header -->
-        <div class="category-header">
-            <h1><?php echo htmlspecialchars($category); ?></h1>
-            <p>Explore our collection of <?php echo htmlspecialchars($category); ?> books</p>
-        
-
-        <!-- Search Section -->
-        
-            <form method="GET" class="search-form" style="margin-top:10px;">
-                <input type="hidden" name="category" value="<?php echo htmlspecialchars($category); ?>">
-                <input type="text" name="search" placeholder="Search books by title, author, or book number..." 
-                       class="search-input" value="<?php echo htmlspecialchars($search); ?>">
-                <button type="submit" class="search-btn">
-                    <i class="fas fa-search"></i> Search
-                </button>
-                <?php if (!empty($search)): ?>
-                    <a href="?category=<?php echo urlencode($category); ?>" class="clear-btn">
-                        <i class="fas fa-times"></i> Clear
-                    </a>
-                <?php endif; ?>
-            </form>
-        
+    <div class="books-container">
+        <!-- Header -->
+        <div class="books-header">
+            <h1>All Books</h1>
+            <p>Explore our complete collection of books</p>
         </div>
 
         <?php if (!empty($message)): ?>
@@ -902,6 +923,38 @@ while ($row = $result->fetch_assoc()) {
             </div>
         <?php endif; ?>
 
+        <!-- Search and Filter Section -->
+        <div class="search-filter-section">
+            <form method="GET" class="search-filter-form">
+                <div class="search-input-group">
+                    <input type="text" name="search" placeholder="Search books by title, author, or book number..." 
+                           class="search-input" value="<?php echo htmlspecialchars($search); ?>">
+                </div>
+                
+                <div class="filter-select-group">
+                    <select name="category" class="filter-select">
+                        <option value="">All Categories</option>
+                        <?php foreach ($categories as $cat): ?>
+                            <option value="<?php echo htmlspecialchars($cat); ?>" <?php echo $category == $cat ? 'selected' : ''; ?>>
+                                <?php echo htmlspecialchars($cat); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                
+                <div class="search-actions">
+                    <button type="submit" class="search-btn">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                    <?php if (!empty($search) || !empty($category)): ?>
+                        <a href="all_books.php" class="clear-btn">
+                            <i class="fas fa-times"></i> Clear
+                        </a>
+                    <?php endif; ?>
+                </div>
+            </form>
+        </div>
+
         <!-- View Toggle -->
         <div class="view-toggle">
             <button class="view-btn active" onclick="switchView('table')">
@@ -921,6 +974,7 @@ while ($row = $result->fetch_assoc()) {
                         <tr>
                             <th>Title</th>
                             <th>Author</th>
+                            <th>Category</th>
                             <th>Book No.</th>
                             <th>Publisher</th>
                             <th>Availability</th>
@@ -932,6 +986,7 @@ while ($row = $result->fetch_assoc()) {
                             <tr>
                                 <td class="book-title-cell"><?php echo htmlspecialchars($book['title']); ?></td>
                                 <td class="book-author-cell"><?php echo htmlspecialchars($book['author']); ?></td>
+                                <td><?php echo htmlspecialchars($book['category']); ?></td>
                                 <td><?php echo htmlspecialchars($book['book_no']); ?></td>
                                 <td><?php echo htmlspecialchars($book['publisher']); ?></td>
                                 <td>
@@ -971,6 +1026,7 @@ while ($row = $result->fetch_assoc()) {
                                 <h3 class="book-title"><?php echo htmlspecialchars($book['title']); ?></h3>
                                 <p class="book-author">by <?php echo htmlspecialchars($book['author']); ?></p>
                                 <div class="book-details">
+                                    <span><strong>Category:</strong> <?php echo htmlspecialchars($book['category']); ?></span>
                                     <?php if (!empty($book['book_no'])): ?>
                                         <span><strong>Book No:</strong> <?php echo htmlspecialchars($book['book_no']); ?></span>
                                     <?php endif; ?>
@@ -1011,7 +1067,7 @@ while ($row = $result->fetch_assoc()) {
                 <?php if ($totalPages > 1): ?>
                     <div class="pagination-container">
                         <?php if ($page > 1): ?>
-                            <a href="?category=<?php echo urlencode($category); ?>&search=<?php echo urlencode($search); ?>&page=<?php echo $page - 1; ?>" class="pagination-btn">
+                            <a href="?search=<?php echo urlencode($search); ?>&category=<?php echo urlencode($category); ?>&page=<?php echo $page - 1; ?>" class="pagination-btn">
                                 <i class="fas fa-chevron-left"></i>
                             </a>
                         <?php else: ?>
@@ -1025,14 +1081,14 @@ while ($row = $result->fetch_assoc()) {
                         $endPage = min($totalPages, $page + 2);
                         
                         if ($startPage > 1): ?>
-                            <a href="?category=<?php echo urlencode($category); ?>&search=<?php echo urlencode($search); ?>&page=1" class="pagination-btn">1</a>
+                            <a href="?search=<?php echo urlencode($search); ?>&category=<?php echo urlencode($category); ?>&page=1" class="pagination-btn">1</a>
                             <?php if ($startPage > 2): ?>
                                 <span class="pagination-btn disabled">...</span>
                             <?php endif; ?>
                         <?php endif; ?>
 
                         <?php for ($i = $startPage; $i <= $endPage; $i++): ?>
-                            <a href="?category=<?php echo urlencode($category); ?>&search=<?php echo urlencode($search); ?>&page=<?php echo $i; ?>" 
+                            <a href="?search=<?php echo urlencode($search); ?>&category=<?php echo urlencode($category); ?>&page=<?php echo $i; ?>" 
                                class="pagination-btn <?php echo $i == $page ? 'active' : ''; ?>">
                                 <?php echo $i; ?>
                             </a>
@@ -1042,11 +1098,11 @@ while ($row = $result->fetch_assoc()) {
                             <?php if ($endPage < $totalPages - 1): ?>
                                 <span class="pagination-btn disabled">...</span>
                             <?php endif; ?>
-                            <a href="?category=<?php echo urlencode($category); ?>&search=<?php echo urlencode($search); ?>&page=<?php echo $totalPages; ?>" class="pagination-btn"><?php echo $totalPages; ?></a>
+                            <a href="?search=<?php echo urlencode($search); ?>&category=<?php echo urlencode($category); ?>&page=<?php echo $totalPages; ?>" class="pagination-btn"><?php echo $totalPages; ?></a>
                         <?php endif; ?>
 
                         <?php if ($page < $totalPages): ?>
-                            <a href="?category=<?php echo urlencode($category); ?>&search=<?php echo urlencode($search); ?>&page=<?php echo $page + 1; ?>" class="pagination-btn">
+                            <a href="?search=<?php echo urlencode($search); ?>&category=<?php echo urlencode($category); ?>&page=<?php echo $page + 1; ?>" class="pagination-btn">
                                 <i class="fas fa-chevron-right"></i>
                             </a>
                         <?php else: ?>
@@ -1060,13 +1116,13 @@ while ($row = $result->fetch_assoc()) {
                 <div class="empty-state">
                     <i class="fas fa-book-open"></i>
                     <h3>No Books Found</h3>
-                    <?php if (!empty($search)): ?>
+                    <?php if (!empty($search) || !empty($category)): ?>
                         <p>No books match your search criteria. Try adjusting your search terms.</p>
-                        <a href="?category=<?php echo urlencode($category); ?>" class="action-btn btn-request" style="margin-top: 20px; display: inline-flex;">
+                        <a href="all_books.php" class="action-btn btn-request" style="margin-top: 20px; display: inline-flex;">
                             <i class="fas fa-list"></i> View All Books
                         </a>
                     <?php else: ?>
-                        <p>There are no books in the <?php echo htmlspecialchars($category); ?> category at the moment.</p>
+                        <p>There are no books available in the library at the moment.</p>
                         <a href="catalog.php" class="action-btn btn-request" style="margin-top: 20px; display: inline-flex;">
                             <i class="fas fa-arrow-left"></i> Back to Catalog
                         </a>

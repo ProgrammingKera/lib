@@ -35,6 +35,11 @@ if ($result) {
         $categories[] = $row;
     }
 }
+
+// Get total books count
+$totalBooksQuery = "SELECT COUNT(*) as total FROM books";
+$totalBooksResult = $conn->query($totalBooksQuery);
+$totalBooks = $totalBooksResult->fetch_assoc()['total'];
 ?>
 
 <!DOCTYPE html>
@@ -89,7 +94,8 @@ if ($result) {
         }
 
         .navbar-brand img {
-            height: 45px;
+            height: 65px;
+            width: 100%;
         }
 
         .navbar-brand h1 {
@@ -113,28 +119,35 @@ if ($result) {
             align-items: center;
             gap: 8px;
         }
+        /* Common Button Style */
+.dashboard-btn,
+.logout-btn {
+    color: var(--white);
+    border: none;
+    transition: var(--transition);
+    border-radius: var(--border-radius);
+}
 
-        .dashboard-btn {
-            background: var(--primary-color);
-            color: white;
-        }
+/* Profile Button */
+.dashboard-btn {
+    background: var(--primary-color);
+}
 
-        .dashboard-btn:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(139, 94, 60, 0.3);
-        }
+.dashboard-btn:hover {
+    background: var(--primary-light); /* Softer hover */
+}
 
-        .logout-btn {
-            background: var(--danger-color);
-            color: white;
-        }
+/* Logout Button */
+.logout-btn {
+    background: var(--accent-color);
+}
 
-        .logout-btn:hover {
-            background: #c82333;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
-        }
+.logout-btn:hover {
+    background: var(--primary-light); /* Soft hover instead of dark */
+}
+
+
+        
 
         /* Main Content */
         .catalog-container {
@@ -287,6 +300,20 @@ if ($result) {
             transform: translateY(-50%) scale(1.2);
         }
 
+        /* Special "All Books" Door */
+        .all-books-door {
+            background: linear-gradient(145deg, #2E7D32, #1B5E20);
+            border-color: #1B5E20;
+        }
+
+        .all-books-door .door-handle {
+            background: #4CAF50;
+        }
+
+        .all-books-door:hover .door-handle {
+            background: #66BB6A;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .navbar-container {
@@ -374,7 +401,7 @@ if ($result) {
     <div class="catalog-container">
         <!-- Welcome Section -->
         <div class="welcome-section">
-            <h1>Welcome to Our Digital Library</h1>
+            <h1>Welcome to Our Book Bridge</h1>
             <p>Discover thousands of books across various categories</p>
         </div>
 
@@ -386,6 +413,19 @@ if ($result) {
             </div>
 
             <div class="category-grid">
+                <!-- All Books Door -->
+                <div class="category-door" onclick="window.location.href='all_books.php'">
+                    <div class="door-content">
+                        <div class="door-icon">
+                            <i class="fas fa-layer-group"></i>
+                        </div>
+                        <div class="door-title">All Books</div>
+                        <div class="door-subtitle"><?php echo $totalBooks; ?> books</div>
+                    </div>
+                    <div class="door-handle"></div>
+                </div>
+
+                <!-- Category Doors -->
                 <?php foreach ($categories as $category): ?>
                     <div class="category-door" onclick="window.location.href='category_books.php?category=<?php echo urlencode($category['category']); ?>'">
                         <div class="door-content">
@@ -398,6 +438,46 @@ if ($result) {
                         <div class="door-handle"></div>
                     </div>
                 <?php endforeach; ?>
+                <div class="category-door " onclick="window.location.href='all_books.php'">
+                    <div class="door-content">
+                        <div class="door-icon">
+                            <i class="fas fa-book-open"></i>
+                        </div>
+                        <div class="door-title">Biology</div>
+                        <div class="door-subtitle"><?php echo $totalBooks; ?> books</div>
+                    </div>
+                    <div class="door-handle"></div>
+                </div>
+                <div class="category-door " onclick="window.location.href='all_books.php'">
+                    <div class="door-content">
+                        <div class="door-icon">
+                            <i class="fas fa-book-open"></i>
+                        </div>
+                        <div class="door-title">Fictions</div>
+                        <div class="door-subtitle"><?php echo $totalBooks; ?> books</div>
+                    </div>
+                    <div class="door-handle"></div>
+                </div>
+                <div class="category-door " onclick="window.location.href='all_books.php'">
+                    <div class="door-content">
+                        <div class="door-icon">
+                            <i class="fas fa-book-open"></i>
+                        </div>
+                        <div class="door-title">Chemistry</div>
+                        <div class="door-subtitle"><?php echo $totalBooks; ?> books</div>
+                    </div>
+                    <div class="door-handle"></div>
+                </div>
+                <div class="category-door " onclick="window.location.href='all_books.php'">
+                    <div class="door-content">
+                        <div class="door-icon">
+                            <i class="fas fa-book-open"></i>
+                        </div>
+                        <div class="door-title">History</div>
+                        <div class="door-subtitle"><?php echo $totalBooks; ?> books</div>
+                    </div>
+                    <div class="door-handle"></div>
+                </div>
             </div>
         </div>
     </div>

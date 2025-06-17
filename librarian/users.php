@@ -215,9 +215,7 @@ while ($row = $result->fetch_assoc()) {
                             <a href="user_details.php?id=<?php echo $user['id']; ?>" style="margin-bottom:10px"; class="btn btn-sm btn-primary">
                                 <i class="fas fa-info-circle"></i> Details
                             </a>
-                            <a href="edit_user.php?id=<?php echo $user['id']; ?>" style="margin-bottom:10px"; class="btn btn-sm btn-secondary">
-                                <i class="fas fa-edit"></i> Edit
-                            </a>
+                            
                             <a href="?delete=<?php echo $user['id']; ?>" class="btn btn-sm btn-danger" onclick="return confirmDelete('Are you sure you want to delete this user?')">
                                 <i class="fas fa-trash"></i> Delete
                             </a>

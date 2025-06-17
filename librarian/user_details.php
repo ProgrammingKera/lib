@@ -50,9 +50,7 @@ $fines = $stmt->get_result();
 <div class="d-flex justify-between align-center mb-4">
     <h1 class="page-title">User Details</h1>
     <div>
-        <a href="edit_user.php?id=<?php echo $user['id']; ?>" class="btn btn-primary">
-            <i class="fas fa-edit"></i> Edit User
-        </a>
+        
         <a href="users.php" class="btn btn-secondary">
             <i class="fas fa-arrow-left"></i> Back to Users
         </a>

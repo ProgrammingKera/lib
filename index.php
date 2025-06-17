@@ -8,7 +8,7 @@ if (isset($_SESSION['user_id'])) {
     if ($_SESSION['role'] == 'librarian') {
         header('Location: librarian/dashboard.php');
     } else {
-        header('Location: student/dashboard.php');
+        header('Location: student/catalog.php'); // Changed to catalog.php
     }
     exit();
 }
@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     if ($user['role'] == 'librarian') {
                         header('Location: librarian/dashboard.php');
                     } else {
-                        header('Location: student/dashboard.php');
+                        header('Location: student/catalog.php'); // Changed to catalog.php
                     }
                     exit();
                 } else {
@@ -281,4 +281,3 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </script>
 </body>
 </html>
-```

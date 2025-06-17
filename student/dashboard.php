@@ -73,6 +73,14 @@ if ($result) {
 ?>
 
 <div class="container">
+    <!-- Back to Catalog Button -->
+    <div class="catalog-nav">
+        <a href="catalog.php" class="btn-catalog">
+            <i class="fas fa-book-open"></i>
+            Back to Library Catalog
+        </a>
+    </div>
+
     <h1 class="page-title">Welcome, <?php echo htmlspecialchars($_SESSION['name']); ?>!</h1>
 
     <!-- Stats Overview -->
@@ -125,7 +133,7 @@ if ($result) {
                 <div class="card-header">
                     <h3>Currently Borrowed Books</h3>
                     <?php if (count($currentlyIssued) > 0): ?>
-                        <a href="my_books.php" class="btn btn-sm btn-primary">View All</a>
+                        <a href="returns.php" class="btn btn-sm btn-primary">View All</a>
                     <?php endif; ?>
                 </div>
                 <div class="card-body">
@@ -163,7 +171,7 @@ if ($result) {
                     <?php else: ?>
                         <p class="text-center">You haven't borrowed any books yet.</p>
                         <div class="text-center">
-                            <a href="books.php" class="btn btn-primary">Browse Books</a>
+                            <a href="catalog.php" class="btn btn-primary">Browse Books</a>
                         </div>
                     <?php endif; ?>
                 </div>
@@ -205,6 +213,10 @@ if ($result) {
     <div class="quick-actions">
         <h3>Quick Actions</h3>
         <div class="action-buttons">
+            <a href="catalog.php" class="action-button">
+                <i class="fas fa-book-open"></i>
+                <span>Library Catalog</span>
+            </a>
             <a href="books.php" class="action-button">
                 <i class="fas fa-search"></i>
                 <span>Search Books</span>
@@ -213,9 +225,13 @@ if ($result) {
                 <i class="fas fa-file-pdf"></i>
                 <span>E-Books</span>
             </a>
-            <a href="my_books.php" class="action-button">
+            <a href="returns.php" class="action-button">
                 <i class="fas fa-book-reader"></i>
                 <span>My Books</span>
+            </a>
+            <a href="reservations.php" class="action-button">
+                <i class="fas fa-bookmark"></i>
+                <span>My Reservations</span>
             </a>
             <a href="profile.php" class="action-button">
                 <i class="fas fa-user-edit"></i>
@@ -226,6 +242,31 @@ if ($result) {
 </div>
 
 <style>
+.catalog-nav {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.btn-catalog {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 25px;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    color: white;
+    text-decoration: none;
+    border-radius: 25px;
+    font-weight: 600;
+    transition: var(--transition);
+    box-shadow: 0 4px 15px rgba(139, 94, 60, 0.3);
+}
+
+.btn-catalog:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(139, 94, 60, 0.4);
+    color: white;
+}
+
 .quick-actions {
     margin-top: 30px;
 }
@@ -296,7 +337,7 @@ if ($result) {
 
 .stats-container {
     display: grid;
-    grid-template-columns: repeat(    -fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 20px;
     margin-bottom: 30px;
 }

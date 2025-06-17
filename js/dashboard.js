@@ -1,52 +1,6 @@
 // Dashboard JavaScript file for the Library Management System
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Toggle sidebar
-    const toggleBtn = document.querySelector('.toggle-sidebar');
-    const sidebar = document.querySelector('.sidebar');
-    const contentWrapper = document.querySelector('.content-wrapper');
-    const overlay = document.querySelector('.overlay');
-    
-    if (toggleBtn && sidebar && contentWrapper) {
-        toggleBtn.addEventListener('click', function() {
-            sidebar.classList.toggle('collapsed');
-            contentWrapper.classList.toggle('expanded');
-            
-            // For mobile
-            sidebar.classList.toggle('mobile-active');
-            if (overlay) {
-                overlay.classList.toggle('active');
-            }
-        });
-        
-        // Close sidebar when clicking overlay (mobile)
-        if (overlay) {
-            overlay.addEventListener('click', function() {
-                sidebar.classList.remove('mobile-active');
-                this.classList.remove('active');
-            });
-        }
-        
-        // Check screen size and collapse sidebar automatically on small screens
-        function checkScreenSize() {
-            if (window.innerWidth < 992) {
-                sidebar.classList.add('collapsed');
-                contentWrapper.classList.add('expanded');
-                sidebar.classList.remove('mobile-active');
-                if (overlay) overlay.classList.remove('active');
-            } else {
-                sidebar.classList.remove('collapsed');
-                contentWrapper.classList.remove('expanded');
-            }
-        }
-        
-        // Initial check
-        checkScreenSize();
-        
-        // Listen for window resize
-        window.addEventListener('resize', checkScreenSize);
-    }
-    
     // Handle view switching (list/grid)
     const viewOptions = document.querySelectorAll('.view-option');
     const booksContainer = document.querySelector('.books-container');
@@ -309,6 +263,63 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
+
+    // Smooth scrolling for anchor links
+    const anchorLinks = document.querySelectorAll('a[href^="#"]');
+    anchorLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href').substring(1);
+            const targetElement = document.getElementById(targetId);
+            if (targetElement) {
+                targetElement.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+
+    // Auto-hide alerts after 5 seconds
+    const alerts = document.querySelectorAll('.alert:not(.alert-persistent)');
+    alerts.forEach(alert => {
+        setTimeout(() => {
+            alert.style.opacity = '0';
+            alert.style.transform = 'translateY(-20px)';
+            setTimeout(() => {
+                alert.remove();
+            }, 300);
+        }, 5000);
+    });
+
+    // Enhanced notification dropdown behavior
+    const notificationDropdown = document.querySelector('.notification-dropdown');
+    const notificationMenu = document.querySelector('.notification-menu');
+    
+    if (notificationDropdown && notificationMenu) {
+        let hideTimeout;
+        
+        notificationDropdown.addEventListener('mouseenter', function() {
+            clearTimeout(hideTimeout);
+            notificationMenu.style.display = 'block';
+        });
+        
+        notificationDropdown.addEventListener('mouseleave', function() {
+            hideTimeout = setTimeout(() => {
+                notificationMenu.style.display = 'none';
+            }, 300);
+        });
+        
+        notificationMenu.addEventListener('mouseenter', function() {
+            clearTimeout(hideTimeout);
+        });
+        
+        notificationMenu.addEventListener('mouseleave', function() {
+            hideTimeout = setTimeout(() => {
+                notificationMenu.style.display = 'none';
+            }, 300);
+        });
+    }
 });
 
 // Dynamic data loading for dashboards
@@ -399,4 +410,80 @@ function formatTimeAgo(timestamp) {
         const options = { year: 'numeric', month: 'short', day: 'numeric' };
         return time.toLocaleDateString(undefined, options);
     }
+}
+
+// Utility function to show loading state
+function showLoading(element) {
+    if (element) {
+        element.innerHTML = '<div class="loader"></div>';
+    }
+}
+
+// Utility function to hide loading state
+function hideLoading(element, originalContent) {
+    if (element) {
+        element.innerHTML = originalContent;
+    }
+}
+
+// Enhanced form validation
+function validateForm(form) {
+    const requiredFields = form.querySelectorAll('[required]');
+    let isValid = true;
+    
+    requiredFields.forEach(field => {
+        const value = field.value.trim();
+        const errorElement = field.parentNode.querySelector('.field-error');
+        
+        if (!value) {
+            isValid = false;
+            field.classList.add('is-invalid');
+            
+            if (!errorElement) {
+                const error = document.createElement('div');
+                error.className = 'field-error';
+                error.textContent = 'This field is required';
+                field.parentNode.appendChild(error);
+            }
+        } else {
+            field.classList.remove('is-invalid');
+            if (errorElement) {
+                errorElement.remove();
+            }
+        }
+    });
+    
+    return isValid;
+}
+
+// Auto-save form data to localStorage
+function autoSaveForm(formId) {
+    const form = document.getElementById(formId);
+    if (!form) return;
+    
+    const inputs = form.querySelectorAll('input, textarea, select');
+    
+    // Load saved data
+    inputs.forEach(input => {
+        const savedValue = localStorage.getItem(`${formId}_${input.name}`);
+        if (savedValue && input.type !== 'password') {
+            input.value = savedValue;
+        }
+    });
+    
+    // Save data on input
+    inputs.forEach(input => {
+        input.addEventListener('input', function() {
+            if (this.type !== 'password') {
+                localStorage.setItem(`${formId}_${this.name}`, this.value);
+            }
+        });
+    });
+    
+    // Clear saved data on form submit
+    form.addEventListener('submit', function() {
+        inputs.forEach(input => {
+            localStorage.removeItem(`${formId}_${input.name}`);
+        });
+    });
 }

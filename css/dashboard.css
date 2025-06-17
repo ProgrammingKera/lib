@@ -1,9 +1,115 @@
 /* Dashboard Styles for Library Management System */
 
+.top-navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(135deg, var(--white) 0%, #f8f9fa 100%);
+    backdrop-filter: blur(10px);
+    border-bottom: 2px solid var(--gray-300);
+    padding: 0;
+    z-index: 1001;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+    height: 70px;
+}
+
+.navbar-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 100%;
+    margin: 0;
+    padding: 0 20px;
+    height: 100%;
+}
+
+.navbar-left {
+    display: flex;
+    align-items: center;
+}
+
+.navbar-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: var(--primary-color);
+    font-weight: 700;
+    transition: var(--transition);
+}
+
+.navbar-logo:hover {
+    color: var(--primary-dark);
+    transform: scale(1.02);
+}
+
+.navbar-logo img {
+    height: 45px;
+    width: auto;
+    object-fit: contain;
+}
+
+.navbar-title {
+    font-size: 1.4em;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.navbar-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.navbar-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: var(--border-radius);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95em;
+    transition: var(--transition);
+    border: 2px solid transparent;
+    white-space: nowrap;
+}
+
+/* Common Button Style */
+.profile-btn,
+.logout-btn {
+    color: var(--white);
+    border: none;
+    transition: var(--transition);
+    border-radius: var(--border-radius);
+}
+
+/* Profile Button */
+.profile-btn {
+    background: var(--primary-color);
+}
+
+.profile-btn:hover {
+    background: var(--primary-light); /* Softer hover */
+}
+
+/* Logout Button */
+.logout-btn {
+    background: var(--accent-color);
+}
+
+.logout-btn:hover {
+    background: var(--primary-light); /* Soft hover instead of dark */
+}
+
+
+
 /* Layout */
 .dashboard-container {
     display: flex;
     min-height: 100vh;
+    margin-top: 70px; /* Account for fixed navbar */
 }
 
 .sidebar {

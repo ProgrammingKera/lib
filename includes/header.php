@@ -43,18 +43,78 @@ $currentPage = basename($_SERVER['PHP_SELF']);
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
+    <!-- Top Navigation Bar -->
+    <nav class="top-navbar">
+        <div class="navbar-container">
+            <div class="navbar-left">
+                <a href="dashboard.php" class="navbar-logo">
+                    <img src="../uploads/assests/library-logo.png" alt="Library Logo">
+                    <span class="navbar-title"></span>
+                </a>
+            </div>
+            
+            <div class="navbar-right">
+                <div class="notification-dropdown">
+                    <div class="notification-bell">
+                        <i class="fas fa-bell"></i>
+                        <?php if ($notificationCount > 0): ?>
+                            <span class="notification-count"><?php echo $notificationCount; ?></span>
+                        <?php endif; ?>
+                    </div>
+                    
+                    <div class="notification-menu">
+                        <div class="notification-header">
+                            <h3>Notifications</h3>
+                            <a href="notifications.php">View All</a>
+                        </div>
+                        
+                        <div class="notification-list">
+                            <?php
+                            $stmt = $conn->prepare("SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT 5");
+                            $stmt->bind_param("i", $userId);
+                            $stmt->execute();
+                            $result = $stmt->get_result();
+                            
+                            if ($result->num_rows > 0) {
+                                while ($notification = $result->fetch_assoc()) {
+                                    $unreadClass = $notification['is_read'] ? '' : 'unread';
+                                    echo '<div class="notification-item ' . $unreadClass . '" data-id="' . $notification['id'] . '">';
+                                    echo '<div class="notification-message">' . $notification['message'] . '</div>';
+                                    echo '<div class="notification-time">' . date('M d, Y H:i', strtotime($notification['created_at'])) . '</div>';
+                                    echo '</div>';
+                                }
+                            } else {
+                                echo '<div class="notification-item">No notifications</div>';
+                            }
+                            ?>
+                        </div>
+                        
+                        <div class="notification-footer">
+                            <a href="notifications.php" class="btn btn-sm btn-primary">See All Notifications</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <a href="profile.php" class="navbar-btn profile-btn">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Profile</span>
+                </a>
+                
+                <a href="../logout.php" class="navbar-btn logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
     <div class="dashboard-container">
         <!-- Sidebar -->
         <div class="sidebar">
-            <div class="sidebar-header">
-                <h2><i class="fas fa-book-reader"></i> LMS</h2>
-                <p>Library Management System</p>
-            </div>
+            
             
             <div class="sidebar-menu">
-                <?php
-                
-                if (isset($_SESSION['role']) && ($_SESSION['role'] === 'student' || $_SESSION['role'] === 'faculty')): ?>
+                <?php if (isset($_SESSION['role']) && ($_SESSION['role'] === 'student' || $_SESSION['role'] === 'faculty')): ?>
                     <a href="dashboard.php" class="sidebar-menu-item <?php echo $currentPage == 'dashboard.php' ? 'active' : ''; ?>">
                         <i class="fas fa-tachometer-alt"></i>
                         <span class="sidebar-menu-label">Dashboard</span>
@@ -65,7 +125,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
                     </a>
                     <a href="reservations.php" class="sidebar-menu-item <?php echo $currentPage == 'reservations.php' ? 'active' : ''; ?>">
                         <i class="fas fa-calendar-check"></i>
-                        <span class="sidebar-menu-label">Reservation</span>
+                        <span class="sidebar-menu-label">Reservations</span>
                     </a>
                     <a href="ebooks.php" class="sidebar-menu-item <?php echo $currentPage == 'ebooks.php' ? 'active' : ''; ?>">
                         <i class="fas fa-file-pdf"></i>
@@ -90,14 +150,6 @@ $currentPage = basename($_SERVER['PHP_SELF']);
                     <a href="feedback.php" class="sidebar-menu-item <?php echo $currentPage == 'feedback.php' ? 'active' : ''; ?>">
                         <i class="fas fa-comments"></i>
                         <span class="sidebar-menu-label">Feedback</span>
-                    </a>
-                    <a href="profile.php" class="sidebar-menu-item <?php echo $currentPage == 'profile.php' ? 'active' : ''; ?>">
-                        <i class="fas fa-user-circle"></i>
-                        <span class="sidebar-menu-label">Profile</span>
-                    </a>
-                    <a href="../logout.php" class="sidebar-menu-item">
-                        <i class="fas fa-sign-out-alt"></i>
-                        <span class="sidebar-menu-label">Logout</span>
                     </a>
                 <?php else: ?>
                     <!-- Librarian Sidebar -->
@@ -137,7 +189,6 @@ $currentPage = basename($_SERVER['PHP_SELF']);
                         <i class="fas fa-bell"></i>
                         <span class="sidebar-menu-label">Notifications</span>
                     </a>
-                    
                     <a href="weed_off_books.php" class="sidebar-menu-item <?php echo $currentPage == 'weed_off_books.php' ? 'active' : ''; ?>">
                         <i class="fas fa-trash-alt"></i>
                         <span class="sidebar-menu-label">Weed Off Books</span>
@@ -146,81 +197,11 @@ $currentPage = basename($_SERVER['PHP_SELF']);
                         <i class="fas fa-comments"></i>
                         <span class="sidebar-menu-label">Feedback</span>
                     </a>
-                    <a href="profile.php" class="sidebar-menu-item <?php echo $currentPage == 'profile.php' ? 'active' : ''; ?>">
-                        <i class="fas fa-user-circle"></i>
-                        <span class="sidebar-menu-label">Profile</span>
-                    </a>
-                    <a href="../logout.php" class="sidebar-menu-item">
-                        <i class="fas fa-sign-out-alt"></i>
-                        <span class="sidebar-menu-label">Logout</span>
-                    </a>
                 <?php endif; ?>
             </div>
         </div>
         
         <!-- Main Content -->
         <div class="content-wrapper">
-            <!-- Header -->
-            <div class="header">
-                <button class="toggle-sidebar">
-                    <i class="fas fa-bars"></i>
-                </button>
-                
-                <div class="header-right">
-                    <div class="notification-dropdown">
-                        <div class="notification-bell">
-                            <i class="fas fa-bell"></i>
-                            <?php if ($notificationCount > 0): ?>
-                                <span class="notification-count"><?php echo $notificationCount; ?></span>
-                            <?php endif; ?>
-                        </div>
-                        
-                        <div class="notification-menu">
-                            <div class="notification-header">
-                                <h3>Notifications</h3>
-                                <a href="notifications.php">View All</a>
-                            </div>
-                            
-                            <div class="notification-list">
-                                <?php
-                                $stmt = $conn->prepare("SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT 5");
-                                $stmt->bind_param("i", $userId);
-                                $stmt->execute();
-                                $result = $stmt->get_result();
-                                
-                                if ($result->num_rows > 0) {
-                                    while ($notification = $result->fetch_assoc()) {
-                                        $unreadClass = $notification['is_read'] ? '' : 'unread';
-                                        echo '<div class="notification-item ' . $unreadClass . '" data-id="' . $notification['id'] . '">';
-                                        echo '<div class="notification-message">' . $notification['message'] . '</div>';
-                                        echo '<div class="notification-time">' . date('M d, Y H:i', strtotime($notification['created_at'])) . '</div>';
-                                        echo '</div>';
-                                    }
-                                } else {
-                                    echo '<div class="notification-item">No notifications</div>';
-                                }
-                                ?>
-                            </div>
-                            
-                            <div class="notification-footer">
-                                <a href="notifications.php" class="btn btn-sm btn-primary">See All Notifications</a>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="user-dropdown">
-                        <div class="user-info">
-                            <span><?php echo $_SESSION['name']; ?></span>
-                            <i class="fas fa-chevron-down"></i>
-                        </div>
-                        
-                        <div class="user-dropdown-content">
-                            <a href="profile.php"><i class="fas fa-user-circle"></i> Profile</a>
-                            <a href="../logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
             <!-- Main Content Area -->
             <div class="content">

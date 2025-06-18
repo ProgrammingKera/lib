@@ -221,7 +221,7 @@ $totalFines = $totalPending + $totalPaid;
                 <i class="fas fa-smile fa-3x text-success mb-3"></i>
                 <h3>No Fines!</h3>
                 <p class="text-muted">You have no fines. Keep up the good work by returning books on time!</p>
-                <a href="books.php" class="btn btn-primary">
+                <a href="catalog.php" class="btn btn-primary">
                     <i class="fas fa-search"></i> Browse Books
                 </a>
             </div>

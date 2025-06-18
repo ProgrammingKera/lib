@@ -284,7 +284,7 @@ $cancelledReservations = array_filter($reservations, function($res) { return $re
                 <i class="fas fa-bookmark fa-3x text-muted mb-3"></i>
                 <h3>No Reservations</h3>
                 <p class="text-muted">You haven't made any book reservations yet. Reserve books when they're unavailable to get them automatically issued when available!</p>
-                <a href="books.php" class="btn btn-primary">
+                <a href="catalog.php" class="btn btn-primary">
                     <i class="fas fa-search"></i> Browse Books
                 </a>
             </div>

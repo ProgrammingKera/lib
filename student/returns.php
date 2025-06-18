@@ -252,7 +252,7 @@ $overdueBooks = array_filter($currentBooks, function($book) {
                 <i class="fas fa-book fa-3x text-muted mb-3"></i>
                 <h3>No Borrowing History</h3>
                 <p class="text-muted">You haven't borrowed any books yet.</p>
-                <a href="books.php" class="btn btn-primary">
+                <a href="catalog.php" class="btn btn-primary">
                     <i class="fas fa-search"></i> Browse Books
                 </a>
             </div>

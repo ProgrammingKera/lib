@@ -409,7 +409,7 @@ $cancelledReservationRequests = array_filter($reservationRequests, function($req
                 <i class="fas fa-clipboard-list fa-3x text-muted mb-3"></i>
                 <h3>No Requests</h3>
                 <p class="text-muted">You haven't made any book or reservation requests yet.</p>
-                <a href="books.php" class="btn btn-primary">
+                <a href="catalog.php" class="btn btn-primary">
                     <i class="fas fa-search"></i> Browse Books
                 </a>
             </div>
